@@ -1,0 +1,17 @@
+# Ignorar todo el contenido de la carpeta principal por defecto (Core de WordPress)
+/*
+
+# Excepciones en la raíz: mantener el archivo .gitignore y la carpeta wp-content
+!.gitignore
+!wp-content/
+
+# Ignorar el contenido general de wp-content (como la carpeta uploads y plugins que no usas)
+wp-content/*
+
+# Excepciones dentro de wp-content: mantener mu-plugins y themes
+!wp-content/mu-plugins/
+!wp-content/themes/
+
+# Opcional: Ignorar los temas por defecto de WordPress para no rastrearlos
+wp-content/themes/twentytwenty*
+wp-content/themes/index.php
