@@ -15,3 +15,6 @@ wp-content/*
 # Opcional: Ignorar los temas por defecto de WordPress para no rastrearlos
 wp-content/themes/twentytwenty*
 wp-content/themes/index.php
+
+# Ignorar node_modules del tema
+node_modules/

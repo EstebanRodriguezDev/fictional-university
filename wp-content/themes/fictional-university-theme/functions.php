@@ -38,7 +38,9 @@ function pageBanner($args = NULL)
 function university_files()
 {
   // wp_enqueue_script: Registra y carga un archivo JS. array('jquery') indica que depende de jQuery.
-  wp_enqueue_script('main_university_scripts', get_theme_file_uri('/build/index.js'), array('jquery'), '1.0', true);
+  wp_enqueue_script('main_university_scripts', get_theme_file_uri('/build/index.js'), array('jquery', 'googleMap'), '1.0', true);
+
+  wp_enqueue_script('googleMap', '//maps.googleapis.com/maps/api/js?key=AIzaSyBa4cXpvb0iBPuurmTNsIVTpSMN-cXgq8E', null, '1.0', true);
 
   // wp_enqueue_style: Registra y carga una hoja de estilo CSS.
   wp_enqueue_style('google-fonts', '//fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i|Roboto:100,300,400,400i,700,700i');
