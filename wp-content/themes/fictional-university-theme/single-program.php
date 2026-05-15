@@ -89,40 +89,22 @@ while (have_posts()) {
       // Bucle para mostrar cada evento relacionado.
       while ($homePageEvents->have_posts()) {
         $homePageEvents->the_post(); // Prepara los datos del evento actual.
-      ?>
-        <div class="event-summary">
-          <a class="event-summary__date t-center" href="#">
-            <span class="event-summary__month">
-              <?php
-              // get_field('event_date'): Obtiene el valor del campo personalizado 'event_date' de ACF.
-              // new DateTime(): Crea un objeto DateTime para formatear la fecha.
-              $eventDate = new DateTime(get_field('event_date'));
-              echo $eventDate->format('M'); // Imprime el mes abreviado (ej. Jan, Feb).
-              ?>
-            </span>
-            <!-- format('d'): Imprime el día del mes. -->
-            <span class="event-summary__day"><?php echo $eventDate->format('d'); ?></span>
-          </a>
-          <div class="event-summary__content">
-            <!-- the_permalink(): Imprime la URL del evento. the_title(): Imprime el título del evento. -->
-            <h5 class="event-summary__title headline headline--tiny"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h5>
-            <p>
-              <?php
-              // has_excerpt(): Verifica si el post tiene un extracto manual.
-              if (has_excerpt()) {
-                echo get_the_excerpt(); // Muestra el extracto manual.
-              } else {
-                // wp_trim_words(): Recorta el contenido a 18 palabras si no hay extracto manual.
-                echo wp_trim_words(get_the_content(), 18);
-              }
-              ?>
-              <a href="<?php the_permalink(); ?>" class="nu gray">Learn more</a>
-            </p>
-          </div>
-        </div>
-    <?php }
+        get_template_part('template-parts/event');
+      }
     }
     wp_reset_postdata(); // Restaura los datos globales del post después de la consulta personalizada.
+    $relatedCampuses = get_field('related_campus');
+    if ($relatedCampuses) {
+      echo '<hr class="section-break">';
+      echo '<h2 class="headline headline--medium">' . get_the_title() . ' is Available At these Campuses:</h2>';
+
+      echo '<ul class="min-list link-list">';
+      foreach ($relatedCampuses as $campus) {
+      ?>
+        <li><a href="<?php get_the_permalink($campus); ?>"><?php echo get_the_title($campus); ?></a></li>
+    <?php }
+      echo '</ul>';
+    }
     ?>
   </div>
 <?php }

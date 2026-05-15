@@ -33,27 +33,8 @@ pageBanner(array(
   // Inicia el bucle para recorrer los resultados de la consulta personalizada.
   while ($pastEvents->have_posts()) {
     $pastEvents->the_post(); // Prepara los datos del evento actual (título, contenido, etc.).
-  ?>
-    <div class="event-summary">
-      <a class="event-summary__date t-center" href="#">
-        <span class="event-summary__month">
-          <?php
-          // get_field('event_date'): Obtiene el valor del campo de fecha de ACF.
-          $eventDate = new DateTime(get_field('event_date'));
-          echo $eventDate->format('M'); // Imprime el mes abreviado (ej: Jan, Feb).
-          ?>
-        </span>
-        <!-- format('d'): Imprime el día del mes. -->
-        <span class="event-summary__day"><?php echo $eventDate->format('d'); ?></span>
-      </a>
-      <div class="event-summary__content">
-        <!-- the_permalink() y the_title(): Funciones para mostrar el enlace y el título del evento. -->
-        <h5 class="event-summary__title headline headline--tiny"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h5>
-        <!-- wp_trim_words(): Recorta el contenido del post a un número específico de palabras (18 en este caso). -->
-        <p><?php echo wp_trim_words(get_the_content(), 18); ?> <a href="<?php the_permalink(); ?>" class="nu gray">Learn more</a></p>
-      </div>
-    </div>
-  <?php }
+    get_template_part('template-parts/event');
+  }
   // paginate_links(): Genera los botones de navegación (1, 2, 3...).
   echo paginate_links(array(
     'total' => $pastEvents->max_num_pages // Se debe pasar el total de páginas del query personalizado para que funcione.

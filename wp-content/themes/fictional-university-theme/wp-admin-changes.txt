@@ -1,0 +1,20 @@
+# REGISTRO DE CAMBIOS EN WP ADMIN
+# Usa este archivo para documentar los cambios que haces en el panel de administración de WordPress 
+# (ej. Advanced Custom Fields, Menús, Ajustes, Widgets, Plugins).
+# De esta manera, al hacer `git pull` en otro entorno, sabrás qué configuraciones manuales debes replicar en la base de datos.
+
+## [Formato sugerido]
+## Fecha: DD/MM/YYYY
+# - [Tipo de cambio] Descripción detallada del cambio.
+
+-------------------------------------------------
+
+## Fecha: 
+- 
+
+Fecha: 15/5/2026
+
+Tipo de cambio:
+
+1. Se agrego un nuevo campo en ACF Related_Campus(es) / Tipo de campo : Relacion / Filtrar por tipo de publicacion: Campus / Filtros: Buscar / Mostrar este grupo de campos si: Program
+2. Al post type "Program" se modifico el programa "Math" y se relaciono con el Campus West

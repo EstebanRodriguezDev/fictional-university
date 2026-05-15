@@ -4,25 +4,29 @@ get_header();
 // Genera el banner superior usando la función reutilizable pageBanner().
 // Define estáticamente el título y subtítulo para la página principal de todos los programas.
 pageBanner(array(
- 'title' => 'Our Campuses',
- 'subtitle' => 'We have several conveniently located campuses.',
+  'title' => 'Our Campuses',
+  'subtitle' => 'We have several conveniently located campuses.',
 ));
 ?>
 
 <div class="container container--narrow page-section">
- <div class="acf-map">
-  <?php
-  while (have_posts()) {
-   the_post();
-   $mapLocation = get_field('map_location');
-  ?>
-   <div class="marker"
-    data-lat="<?php echo $mapLocation['lat']; ?>" data-lng="<?php echo $mapLocation['lng']; ?>"></div>
-  <?php }
-
-  echo paginate_links();
-  ?>
- </div>
+  <div class="acf-map">
+    <?php
+    while (have_posts()) {
+      the_post();
+      $mapLocation = get_field('map_location');
+    ?>
+      <div class="marker"
+        data-lat="<?php echo $mapLocation['lat']; ?>" data-lng="<?php echo $mapLocation['lng']; ?>">
+        <h3>
+          <a href="<?php the_permalink(); ?>">
+            <?php the_title(); ?>
+          </a>
+        </h3>
+        <p><?php echo $mapLocation['address']; ?></p>
+      </div>
+    <?php } ?>
+  </div>
 </div>
 
 <?php
