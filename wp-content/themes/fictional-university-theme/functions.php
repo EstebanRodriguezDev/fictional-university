@@ -67,13 +67,16 @@ add_action('after_setup_theme', 'university_features');
 // university_adjust_queries: Modifica las consultas a la base de datos antes de que se ejecuten en la página.
 function university_adjust_queries($query)
 {
+  if (!is_admin() and is_post_type_archive('campus') and $query->is_main_query()) {
+    $query->set('posts_per_page', -1); // Mostrar todos los elementos (-1).
+  }
   // is_admin: Verifica que no estemos en el panel de control.
   // is_post_type_archive: Verifica si estamos viendo el listado de un tipo de contenido (Programas).
   // is_main_query: Asegura que solo modifiquemos la consulta principal de la página.
   if (!is_admin() and is_post_type_archive('program') and $query->is_main_query()) {
     $query->set('orderby', 'title'); // Ordenar por título.
     $query->set('order', 'ASC'); // Orden ascendente (A-Z).
-    $query->set('post_per_page', -1); // Mostrar todos los elementos (-1).
+    $query->set('posts_per_page', -1); // Mostrar todos los elementos (-1).
   }
 
   if (!is_admin() and is_post_type_archive('event') and $query->is_main_query()) {
