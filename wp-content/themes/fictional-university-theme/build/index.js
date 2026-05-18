@@ -21,11 +21,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-// Instantiate a new object using our modules/classes
-const mobileMenu = new _modules_MobileMenu__WEBPACK_IMPORTED_MODULE_1__["default"]();
-const heroSlider = new _modules_HeroSlider__WEBPACK_IMPORTED_MODULE_2__["default"]();
-const googleMap = new _modules_GoogleMap__WEBPACK_IMPORTED_MODULE_3__["default"]();
-const search = new _modules_Search__WEBPACK_IMPORTED_MODULE_4__["default"]();
+document.addEventListener('DOMContentLoaded', () => {
+  // Instantiate a new object using our modules/classes
+  const mobileMenu = new _modules_MobileMenu__WEBPACK_IMPORTED_MODULE_1__["default"]();
+  const heroSlider = new _modules_HeroSlider__WEBPACK_IMPORTED_MODULE_2__["default"]();
+  const googleMap = new _modules_GoogleMap__WEBPACK_IMPORTED_MODULE_3__["default"]();
+  const search = new _modules_Search__WEBPACK_IMPORTED_MODULE_4__["default"]();
+});
 
 /***/ },
 
@@ -192,8 +194,35 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 class Search {
+  // 1- Descripcion del objeto asi como la creacion/iniciacion.
   constructor() {
-    alert('Soy el buscador en tiempo real');
+    this.openButton = document.querySelector(".site-header__util .js-search-trigger");
+    this.closeButton = document.querySelector(".search-overlay__close");
+    this.searchOverlay = document.querySelector(".search-overlay");
+    this.event();
+    this.isOverlayOpen = false;
+  }
+  // 2- Eventos
+  event() {
+    this.openButton.addEventListener('click', this.openOverlay.bind(this));
+    this.closeButton.addEventListener('click', this.closeOverlay.bind(this));
+    document.addEventListener("keydown", this.keyPressDispatcher.bind(this));
+  }
+  // 3- Metodos
+  openOverlay() {
+    this.searchOverlay.classList.add('search-overlay--active');
+    document.querySelector("body").classList.add('body-no-scroll');
+    this.isOverlayOpen = true;
+  }
+  closeOverlay() {
+    this.searchOverlay.classList.remove('search-overlay--active');
+    document.querySelector("body").classList.remove('body-no-scroll');
+    this.isOverlayOpen = false;
+  }
+  keyPressDispatcher(e) {
+    if (e.keyCode == 83 && !this.isOverlayOpen) {
+      this.openOverlay();
+    } else if (e.keyCode == 27 && this.isOverlayOpen) this.closeOverlay();
   }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Search);
