@@ -14,19 +14,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_HeroSlider__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/HeroSlider */ "./src/modules/HeroSlider.js");
 /* harmony import */ var _modules_GoogleMap__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/GoogleMap */ "./src/modules/GoogleMap.js");
 /* harmony import */ var _modules_Search__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/Search */ "./src/modules/Search.js");
+// Importa el archivo principal de estilos SCSS para que Webpack lo procese y lo incluya en el build final.
 
 
 // Our modules / classes
+// Importa las diferentes clases de Javascript que controlan funcionalidades específicas de la página.
 
 
 
 
+
+// document.addEventListener('DOMContentLoaded', ...): Se asegura de que el código JavaScript
+// se ejecute sólo después de que todo el documento HTML (el DOM) haya cargado completamente.
 document.addEventListener('DOMContentLoaded', () => {
   // Instantiate a new object using our modules/classes
+  // Instancia (crea un objeto de) cada clase importada, lo que activa sus constructores y por ende su funcionalidad en la página.
   const mobileMenu = new _modules_MobileMenu__WEBPACK_IMPORTED_MODULE_1__["default"]();
   const heroSlider = new _modules_HeroSlider__WEBPACK_IMPORTED_MODULE_2__["default"]();
   const googleMap = new _modules_GoogleMap__WEBPACK_IMPORTED_MODULE_3__["default"]();
-  const search = new _modules_Search__WEBPACK_IMPORTED_MODULE_4__["default"]();
+  const search = new _modules_Search__WEBPACK_IMPORTED_MODULE_4__["default"](); // Inicializa el módulo de búsqueda superpuesta.
 });
 
 /***/ },
@@ -41,64 +47,84 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+// Clase GMap: Maneja la inicialización y el comportamiento de los mapas de Google Maps
+// en los elementos con clase '.acf-map', que son generados por el campo de mapa de ACF.
 class GMap {
+  // El constructor busca todos los contenedores de mapa en la página y crea un mapa por cada uno.
   constructor() {
     document.querySelectorAll(".acf-map").forEach(el => {
       this.new_map(el);
     });
   }
+
+  // new_map: Inicializa una instancia de Google Maps dentro del elemento contenedor recibido ($el).
+  // Busca todos los marcadores dentro del contenedor, los agrega al mapa y luego centra la vista.
   new_map($el) {
-    var $markers = $el.querySelectorAll(".marker");
+    var $markers = $el.querySelectorAll(".marker"); // Selecciona todos los elementos '.marker' dentro del contenedor del mapa.
+
+    // args: Configuración inicial del mapa (zoom, centro provisional y tipo de vista).
     var args = {
       zoom: 16,
       center: new google.maps.LatLng(0, 0),
-      mapTypeId: google.maps.MapTypeId.ROADMAP
+      // Centro provisional; se recalcula con center_map().
+      mapTypeId: google.maps.MapTypeId.ROADMAP // Muestra el mapa estándar de calles.
     };
-    var map = new google.maps.Map($el, args);
-    map.markers = [];
-    var that = this;
+    var map = new google.maps.Map($el, args); // Crea la instancia del mapa de Google dentro del elemento HTML.
+    map.markers = []; // Array para almacenar todos los marcadores que se añadan al mapa.
+    var that = this; // Guarda la referencia a 'this' para usarla dentro de callbacks donde 'this' cambia de contexto.
 
     // add markers
+    // Itera sobre cada elemento '.marker' del DOM y lo agrega al mapa usando el método add_marker.
     $markers.forEach(function (x) {
       that.add_marker(x, map);
     });
 
     // center map
+    // Una vez añadidos todos los marcadores, ajusta la vista del mapa para que quepan todos.
     this.center_map(map);
   } // end new_map
 
+  // add_marker: Crea un marcador de Google Maps en la posición indicada por los atributos 'data-lat' y 'data-lng' del elemento.
+  // Si el elemento tiene contenido HTML interno, lo usa para crear un InfoWindow (ventana emergente al hacer clic).
   add_marker($marker, map) {
-    var latlng = new google.maps.LatLng($marker.getAttribute("data-lat"), $marker.getAttribute("data-lng"));
+    var latlng = new google.maps.LatLng($marker.getAttribute("data-lat"), $marker.getAttribute("data-lng")); // Obtiene las coordenadas del marcador desde los atributos HTML.
+
     var marker = new google.maps.Marker({
       position: latlng,
       map: map
     });
-    map.markers.push(marker);
+    map.markers.push(marker); // Agrega el nuevo marcador al array del mapa para poder usarlo en center_map.
 
     // if marker contains HTML, add it to an infoWindow
+    // Si el elemento '.marker' tiene HTML dentro (nombre, dirección, etc.), se crea una ventana informativa.
     if ($marker.innerHTML) {
       // create info window
       var infowindow = new google.maps.InfoWindow({
-        content: $marker.innerHTML
+        content: $marker.innerHTML // El contenido del popup es el HTML que estaba dentro del div '.marker'.
       });
 
       // show info window when marker is clicked
+      // Agrega un listener para abrir la ventana informativa al hacer clic sobre el marcador.
       google.maps.event.addListener(marker, "click", function () {
         infowindow.open(map, marker);
       });
     }
   } // end add_marker
 
+  // center_map: Ajusta el centro y el zoom del mapa para que todos los marcadores queden visibles.
   center_map(map) {
-    var bounds = new google.maps.LatLngBounds();
+    var bounds = new google.maps.LatLngBounds(); // LatLngBounds: Define un área geográfica rectangular que se expande para contener todos los puntos.
 
     // loop through all markers and create bounds
+    // Expande el área límite para incluir la posición de cada marcador registrado.
     map.markers.forEach(function (marker) {
       var latlng = new google.maps.LatLng(marker.position.lat(), marker.position.lng());
       bounds.extend(latlng);
     });
 
     // only 1 marker?
+    // Si solo hay un marcador, se centra el mapa en él con un zoom fijo (16).
+    // Con varios marcadores, se ajusta automáticamente el zoom para que todos quepan en la vista.
     if (map.markers.length == 1) {
       // set center of map
       map.setCenter(bounds.getCenter());
@@ -124,28 +150,40 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _glidejs_glide__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @glidejs/glide */ "./node_modules/@glidejs/glide/dist/glide.esm.js");
+// Importa la librería Glide.js, que es el motor del slider/carousel.
 
+
+// Clase HeroSlider: Inicializa el slider de imágenes de la página principal.
+// Genera dinámicamente los botones de navegación (puntos) y activa el carrusel automático.
 class HeroSlider {
   constructor() {
+    // Verifica si existe el slider en la página antes de inicializarlo
+    // para evitar errores en páginas que no lo tienen.
     if (document.querySelector(".hero-slider")) {
       // count how many slides there are
+      // Cuenta el número total de slides para generar el mismo número de botones de navegación.
       const dotCount = document.querySelectorAll(".hero-slider__slide").length;
 
       // Generate the HTML for the navigation dots
+      // Crea dinámicamente un botón por cada slide, usando el atributo 'data-glide-dir' para que Glide sepa a qué slide navegar.
       let dotHTML = "";
       for (let i = 0; i < dotCount; i++) {
         dotHTML += `<button class="slider__bullet glide__bullet" data-glide-dir="=${i}"></button>`;
       }
 
       // Add the dots HTML to the DOM
+      // Inserta los botones generados dentro del contenedor de bullets del slider.
       document.querySelector(".glide__bullets").insertAdjacentHTML("beforeend", dotHTML);
 
       // Actually initialize the glide / slider script
+      // Crea la instancia de Glide con tipo carrusel (loop infinito), 1 slide visible y autoplay cada 3 segundos.
       var glide = new _glidejs_glide__WEBPACK_IMPORTED_MODULE_0__["default"](".hero-slider", {
         type: "carousel",
         perView: 1,
         autoplay: 3000
       });
+
+      // mount(): Activa y renderiza el slider en el DOM.
       glide.mount();
     }
   }
@@ -164,15 +202,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+// Clase MobileMenu: Controla la apertura y cierre del menú de navegación en dispositivos móviles.
+// Alterna clases CSS en el botón y en el contenedor del menú para mostrarlo u ocultarlo.
 class MobileMenu {
+  // El constructor selecciona los elementos del DOM necesarios y registra los eventos.
   constructor() {
-    this.menu = document.querySelector(".site-header__menu");
-    this.openButton = document.querySelector(".site-header__menu-trigger");
+    this.menu = document.querySelector(".site-header__menu"); // Contenedor principal del menú de navegación.
+    this.openButton = document.querySelector(".site-header__menu-trigger"); // Botón de hamburguesa (≡) que activa el menú.
     this.events();
   }
+
+  // events: Registra el listener de clic sobre el botón del menú.
   events() {
     this.openButton.addEventListener("click", () => this.openMenu());
   }
+
+  // openMenu: Alterna el estado abierto/cerrado del menú.
+  // Cambia el ícono del botón entre 'fa-bars' (≡) y 'fa-window-close' (✕)
+  // y muestra u oculta el menú agregando/quitando la clase activa.
   openMenu() {
     this.openButton.classList.toggle("fa-bars");
     this.openButton.classList.toggle("fa-window-close");
@@ -195,34 +242,60 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 class Search {
   // 1- Descripcion del objeto asi como la creacion/iniciacion.
+  // El constructor se ejecuta automáticamente cuando se crea una instancia de la clase Search.
+  // Aquí se seleccionan los elementos del DOM que se usarán en la funcionalidad de búsqueda.
   constructor() {
-    this.openButton = document.querySelector(".site-header__util .js-search-trigger");
-    this.closeButton = document.querySelector(".search-overlay__close");
-    this.searchOverlay = document.querySelector(".search-overlay");
-    this.event();
-    this.isOverlayOpen = false;
+    this.resultDiv = document.querySelector('#search-overlay__results'); // Contenedor donde se mostrarán los resultados de búsqueda.
+    this.openButton = document.querySelector(".site-header__util .js-search-trigger"); // Botón(es) que abre la capa de búsqueda (icono de lupa).
+    this.closeButton = document.querySelector(".search-overlay__close"); // Botón que cierra la capa de búsqueda (la "X").
+    this.searchOverlay = document.querySelector(".search-overlay"); // La capa superpuesta de búsqueda a pantalla completa.
+    this.searchField = document.querySelector('#search-term'); // El input de texto donde el usuario escribe su búsqueda.
+    this.events(); // Llama a la función events() para registrar los event listeners.
+    this.isOverlayOpen = false; // Variable de estado para saber si la capa está abierta o cerrada.
+    this.typingTimer; // Variable para almacenar el temporizador del retraso al escribir (debounce).
   }
   // 2- Eventos
-  event() {
+  // Este método agrupa y registra todos los event listeners del módulo.
+  events() {
+    // Al hacer clic en el botón de abrir, ejecuta openOverlay. bind(this) asegura que 'this' siga refiriéndose a la clase Search.
     this.openButton.addEventListener('click', this.openOverlay.bind(this));
+    // Al hacer clic en el botón de cerrar, ejecuta closeOverlay.
     this.closeButton.addEventListener('click', this.closeOverlay.bind(this));
+    // Escucha cualquier tecla presionada en el documento para atajos de teclado.
     document.addEventListener("keydown", this.keyPressDispatcher.bind(this));
+    // Escucha cada vez que el usuario suelta una tecla al escribir en el campo de búsqueda.
+    this.searchField.addEventListener('keyup', this.typingLogic.bind(this));
   }
   // 3- Metodos
+  // Abre la capa de búsqueda añadiendo una clase CSS y evita que el fondo haga scroll.
   openOverlay() {
     this.searchOverlay.classList.add('search-overlay--active');
     document.querySelector("body").classList.add('body-no-scroll');
-    this.isOverlayOpen = true;
+    this.isOverlayOpen = true; // Actualiza el estado a abierto.
   }
+  // Cierra la capa de búsqueda eliminando la clase CSS y permite que el fondo haga scroll de nuevo.
   closeOverlay() {
     this.searchOverlay.classList.remove('search-overlay--active');
     document.querySelector("body").classList.remove('body-no-scroll');
-    this.isOverlayOpen = false;
+    this.isOverlayOpen = false; // Actualiza el estado a cerrado.
   }
+  // Maneja los atajos de teclado (tecla 'S' para abrir, 'Esc' para cerrar).
   keyPressDispatcher(e) {
+    // Si se presiona la tecla 'S' (código 83) y la capa no está abierta, se abre.
     if (e.keyCode == 83 && !this.isOverlayOpen) {
       this.openOverlay();
-    } else if (e.keyCode == 27 && this.isOverlayOpen) this.closeOverlay();
+    } else if (e.keyCode == 27 && this.isOverlayOpen)
+      // Si se presiona la tecla 'Esc' (código 27) y la capa está abierta, se cierra.
+      this.closeOverlay();
+  }
+  // Lógica de tipeo con 'debounce' (retraso) para no hacer múltiples acciones por cada letra que se escriba,
+  // sino esperar a que el usuario deje de escribir.
+  typingLogic() {
+    clearTimeout(this.typingTimer); // Reinicia el temporizador cada vez que se presiona una tecla.
+    // Inicia un nuevo temporizador que se ejecutará después de 2000 milisegundos (2 segundos) de inactividad.
+    this.typingTimer = setTimeout(() => {
+      console.log('Tiempo terminado'); // Aquí irá la lógica de búsqueda real al servidor o visualización de resultados.
+    }, 2000);
   }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Search);

@@ -1,8 +1,11 @@
 <?php
+// get_header(): Incluye el archivo header.php del tema.
 get_header();
 
+// Inicia el bucle (Loop) de WordPress para procesar el contenido del campus actual.
 while (have_posts()) {
-  the_post();
+  the_post(); // Prepara los datos del post (título, contenido, etc.).
+  // Despliega el banner superior. Al ser un campus, detectará su título y su imagen de fondo (ACF).
   pageBanner();
 ?>
 
@@ -14,21 +17,28 @@ while (have_posts()) {
       </p>
     </div>
 
+    <!-- the_content(): Imprime el contenido principal del campus, tal como se introduce en el editor de WordPress. -->
     <div class="generic-content"><?php the_content(); ?></div>
     <div class="acf-map">
-      <?php $mapLocation = get_field('map_location'); ?>
+      <?php 
+      // get_field('map_location'): Obtiene el valor del campo personalizado de mapa de Google (ACF).
+      $mapLocation = get_field('map_location'); 
+      ?>
+      <!-- Se usa data-lat y data-lng para pasar la latitud y longitud a JavaScript para pintar el marcador en el mapa. -->
       <div class="marker"
         data-lat="<?php echo $mapLocation['lat']; ?>" data-lng="<?php echo $mapLocation['lng']; ?>">
         <h3>
+          <!-- the_title(): Imprime el nombre del campus en el marcador del mapa. -->
           <?php the_title(); ?>
         </h3>
+        <!-- Muestra la dirección formateada obtenida de los datos del mapa de ACF. -->
         <p><?php echo $mapLocation['address']; ?></p>
       </div>
     </div>
     <?php
     $relatedPrograms = new WP_Query(array(
       'posts_per_page' => -1, // Muestra todos los posts que coincidan.
-      'post_type' => 'program', // Busca posts del tipo 'campus'.
+      'post_type' => 'program', // Busca posts del tipo 'program' para relacionarlos con el campus actual.
       'orderby' => 'title', // Ordena los resultados por título.
       'order' => 'ASC', // Orden ascendente (A-Z).
       'meta_query' => array( // Permite filtrar posts basados en valores de campos personalizados (ACF).

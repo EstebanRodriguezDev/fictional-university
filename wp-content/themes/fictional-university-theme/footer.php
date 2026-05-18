@@ -67,6 +67,10 @@
       <i class="fa fa-window-close search-overlay__close" aria-hidden="true"></i>
     </div>
   </div>
+  <div class="container">
+    <div id="search-overlay__results">
+    </div>
+  </div>
 </div>
 <!-- wp_footer(): Función vital. Aquí WordPress inyecta todos los scripts (JS) cargados en functions.php y los de plugins activos. -->
 <?php wp_footer(); ?>

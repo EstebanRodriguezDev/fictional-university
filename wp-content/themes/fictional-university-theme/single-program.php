@@ -93,14 +93,17 @@ while (have_posts()) {
       }
     }
     wp_reset_postdata(); // Restaura los datos globales del post después de la consulta personalizada.
+    // get_field('related_campus'): Obtiene el valor del campo personalizado de ACF para ver en qué campus se dicta el programa actual.
     $relatedCampuses = get_field('related_campus');
     if ($relatedCampuses) {
       echo '<hr class="section-break">';
       echo '<h2 class="headline headline--medium">' . get_the_title() . ' is Available At these Campuses:</h2>';
 
       echo '<ul class="min-list link-list">';
+      // Itera sobre los campus relacionados.
       foreach ($relatedCampuses as $campus) {
       ?>
+        <!-- get_the_permalink() y get_the_title(): Enlazan al detalle del campus y muestran su título. -->
         <li><a href="<?php echo get_the_permalink($campus); ?>"><?php echo get_the_title($campus); ?></a></li>
     <?php }
       echo '</ul>';

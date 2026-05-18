@@ -97,12 +97,15 @@ function university_adjust_queries($query)
 add_action('pre_get_posts', 'university_adjust_queries');
 
 
+// universityMapKey: Intercepta la configuración de Advanced Custom Fields (ACF) para el campo de Google Maps.
+// Se inyecta la clave API necesaria para que el mapa pueda renderizarse correctamente en el backend y el frontend.
 function universityMapKey($api)
 {
   $api['key'] = 'AIzaSyBa4cXpvb0iBPuurmTNsIVTpSMN-cXgq8E';
   return $api;
 }
 
+// add_filter('acf/fields/google_map/api', ...): Engancha nuestra función al filtro específico de ACF para proveer la API key de Maps.
 add_filter('acf/fields/google_map/api', 'universityMapKey');
 
 // CLAVE API GOOGLE MAPS
