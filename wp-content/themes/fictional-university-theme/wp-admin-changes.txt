@@ -12,9 +12,8 @@
 ## Fecha: 
 - 
 
-Fecha: 15/5/2026
+Fecha: 18/5/2026
 
 Tipo de cambio:
 
-1. Se agrego un nuevo campo en ACF Related_Campus(es) / Tipo de campo : Relacion / Filtrar por tipo de publicacion: Campus / Filtros: Buscar / Mostrar este grupo de campos si: Program
-2. Al post type "Program" se modifico el programa "Math" y se relaciono con el Campus West
+1- Hay que descargar postman en el trabajo para poder trabajar con la REST API de WP

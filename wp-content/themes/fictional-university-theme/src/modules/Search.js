@@ -11,6 +11,8 @@ class Search {
     this.events(); // Llama a la función events() para registrar los event listeners.
     this.isOverlayOpen = false; // Variable de estado para saber si la capa está abierta o cerrada.
     this.typingTimer; // Variable para almacenar el temporizador del retraso al escribir (debounce).
+    this.isSpinnerVisible = false;
+    this.previusValue;
   }
   // 2- Eventos
   // Este método agrupa y registra todos los event listeners del módulo.
@@ -40,7 +42,7 @@ class Search {
   // Maneja los atajos de teclado (tecla 'S' para abrir, 'Esc' para cerrar).
   keyPressDispatcher(e) {
     // Si se presiona la tecla 'S' (código 83) y la capa no está abierta, se abre.
-    if (e.keyCode == 83 && !this.isOverlayOpen) {
+    if (e.keyCode == 83 && !this.isOverlayOpen && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
       this.openOverlay();
     } else if (e.keyCode == 27 && this.isOverlayOpen) // Si se presiona la tecla 'Esc' (código 27) y la capa está abierta, se cierra.
       this.closeOverlay();
@@ -48,11 +50,26 @@ class Search {
   // Lógica de tipeo con 'debounce' (retraso) para no hacer múltiples acciones por cada letra que se escriba,
   // sino esperar a que el usuario deje de escribir.
   typingLogic() {
-    clearTimeout(this.typingTimer); // Reinicia el temporizador cada vez que se presiona una tecla.
-    // Inicia un nuevo temporizador que se ejecutará después de 2000 milisegundos (2 segundos) de inactividad.
-    this.typingTimer = setTimeout(() => {
-      console.log('Tiempo terminado'); // Aquí irá la lógica de búsqueda real al servidor o visualización de resultados.
-    }, 2000);
+    if (this.searchField.value != this.previusValue) {
+      clearTimeout(this.typingTimer); // Reinicia el temporizador cada vez que se presiona una tecla.
+      if (this.searchField.value) {
+        if (!this.isSpinnerVisible) {
+          this.resultDiv.innerHTML = '<div class="spinner-loader"></div>';
+          this.isSpinnerVisible = true;
+        } else {
+          this.isSpinnerVisible = false;
+        }
+        // Inicia un nuevo temporizador que se ejecutará después de 2000 milisegundos (2 segundos) de inactividad.
+        this.typingTimer = setTimeout(this.getResults.bind(this), 2000);
+      } else {
+        this.resultDiv.innerHTML = '';
+        this.isSpinnerVisible = false;
+      }
+    }
+    this.previusValue = this.searchField.value;
+  }
+  getResults() {
+    this.resultDiv.innerHTML = 'Resultados de la busqueda';
   }
 }
 
