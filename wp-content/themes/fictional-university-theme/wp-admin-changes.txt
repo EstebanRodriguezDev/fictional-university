@@ -17,3 +17,9 @@ Fecha: 18/5/2026
 Tipo de cambio:
 
 1- Hay que descargar postman en el trabajo para poder trabajar con la REST API de WP
+
+Fecha: 19/5/2026
+
+Tipo de cambio: 
+
+1- Hay que agregar un post con el titulo "Biology is cool" con algo de lorem ipsum.

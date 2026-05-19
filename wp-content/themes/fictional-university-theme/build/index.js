@@ -260,13 +260,25 @@ class Search {
   // Este método agrupa y registra todos los event listeners del módulo.
   events() {
     // Al hacer clic en el botón de abrir, ejecuta openOverlay. bind(this) asegura que 'this' siga refiriéndose a la clase Search.
-    this.openButton.addEventListener('click', this.openOverlay.bind(this));
+    // this.openButton.addEventListener('click', this.openOverlay.bind(this));
+    this.openButton.addEventListener('click', () => {
+      this.openOverlay();
+    });
     // Al hacer clic en el botón de cerrar, ejecuta closeOverlay.
-    this.closeButton.addEventListener('click', this.closeOverlay.bind(this));
+    // this.closeButton.addEventListener('click', this.closeOverlay.bind(this));
+    this.closeButton.addEventListener('click', () => {
+      this.closeOverlay();
+    });
     // Escucha cualquier tecla presionada en el documento para atajos de teclado.
-    document.addEventListener("keydown", this.keyPressDispatcher.bind(this));
+    // document.addEventListener("keydown", this.keyPressDispatcher.bind(this));
+    document.addEventListener('keydown', e => {
+      this.keyPressDispatcher(e);
+    });
     // Escucha cada vez que el usuario suelta una tecla al escribir en el campo de búsqueda.
-    this.searchField.addEventListener('keyup', this.typingLogic.bind(this));
+    // this.searchField.addEventListener('keyup', this.typingLogic.bind(this));
+    this.searchField.addEventListener('keyup', () => {
+      this.typingLogic();
+    });
   }
   // 3- Metodos
   // Abre la capa de búsqueda añadiendo una clase CSS y evita que el fondo haga scroll.
@@ -312,7 +324,13 @@ class Search {
     this.previusValue = this.searchField.value;
   }
   getResults() {
-    this.resultDiv.innerHTML = 'Resultados de la busqueda';
+    const url = `http://fictional-university.local/wp-json/wp/v2/posts?search=${this.searchField.value}`;
+    fetch(url).then(respuesta => respuesta.json()).then(datos => this.resultDiv.innerHTML = `
+          <h2 class="search-overlay__section-title">General Information</h2>
+          <ul class="link-list min-list">
+            ${datos.map(dato => `<li><a href="${dato.link}">${dato.title.rendered}</a></li>`)}
+          </ul>
+        `).catch(error => console.log('No hay concidencias en su busqueda'));
   }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Search);
