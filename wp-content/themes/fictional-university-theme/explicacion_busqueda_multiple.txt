@@ -1,0 +1,94 @@
+========================================================================
+GUÍA DE EXPLICACIÓN: BÚSQUEDA MULTIPLE CON PROMISE.ALL EN WP REST API
+========================================================================
+
+Este documento explica cómo funciona el método `getResults()` en `Search.js`
+para realizar búsquedas simultáneas en múltiples tipos de contenido (posts,
+páginas y programas) de WordPress usando JavaScript moderno.
+
+------------------------------------------------------------------------
+1. EL PROBLEMA ORIGINAL
+------------------------------------------------------------------------
+Por defecto, la API REST de WordPress expone endpoints individuales para 
+cada tipo de publicación (Custom Post Type):
+  - Posts: `/wp-json/wp/v2/posts`
+  - Páginas: `/wp-json/wp/v2/pages`
+  - Programas: `/wp-json/wp/v2/program` (o tu post type personalizado)
+
+Para buscar en todos ellos a la vez, debemos consultar las 3 URLs.
+
+------------------------------------------------------------------------
+2. EL ARREGLO DE URLS
+------------------------------------------------------------------------
+Definimos un array con las direcciones de las APIs que queremos consultar,
+inyectando el término que el usuario escribe en el buscador:
+
+const urls = [
+  `${universityData.root_url}/wp-json/wp/v2/posts?search=${this.searchField.value}`,
+  `${universityData.root_url}/wp-json/wp/v2/pages?search=${this.searchField.value}`,
+  `${universityData.root_url}/wp-json/wp/v2/program?search=${this.searchField.value}`
+];
+
+------------------------------------------------------------------------
+3. PASO 1: MAPEAR LAS URLS Y EJECUTAR PROMISE.ALL
+------------------------------------------------------------------------
+Código:
+Promise.all(urls.map(url => fetch(url)))
+
+¿Cómo funciona esto?
+- "Mapear" (.map()): Toma el array original de textos (URLs) y transforma cada
+  texto en una llamada de red "fetch(url)". El resultado es un nuevo array de
+  Promesas activas en paralelo: [Promise(fetch1), Promise(fetch2), Promise(fetch3)].
+- Ejecución en paralelo: Al meterlas en el .map(), el navegador inicia las tres
+  peticiones HTTP al mismo tiempo, sin esperar una detrás de otra.
+- Promise.all(): Agrupa este array de promesas y espera hasta que las tres hayan
+  terminado de descargar sus datos del servidor.
+
+------------------------------------------------------------------------
+4. PASO 2: CONVERTIR LAS RESPUESTAS A JSON
+------------------------------------------------------------------------
+Código:
+.then(respuestas => {
+  return Promise.all(respuestas.map(respuesta => respuesta.json()))
+})
+
+¿Por qué usamos Promise.all() de nuevo aquí?
+- Cuando el primer Promise.all se resuelve, obtenemos un array de objetos
+  "Response" (la respuesta HTTP cruda con cabeceras y metadatos).
+- Para extraer la información útil (el JSON de los posts/páginas), debemos
+  llamar al método ".json()" de cada respuesta.
+- Dado que ".json()" también es una operación asíncrona que devuelve otra
+  Promesa, mapeamos el array "respuestas" a "respuesta.json()" obteniendo
+  [Promise(json1), Promise(json2), Promise(json3)].
+- Usamos Promise.all() por segunda vez para esperar a que todas las conversiones
+  a JSON terminen antes de pasar al siguiente bloque.
+
+------------------------------------------------------------------------
+5. PASO 3: APLANAR Y MOSTRAR LOS DATOS
+------------------------------------------------------------------------
+Una vez que el segundo Promise.all() se completa, obtenemos un array de arrays:
+datos = [
+  [post1, post2, ...],      // datos[0]
+  [pagina1, pagina2, ...],  // datos[1]
+  [programa1, ...],         // datos[2]
+]
+
+Si intentas mapear sobre "datos" directamente, dará error porque estás
+iterando sobre los arreglos principales y no sobre los posts/páginas individuales.
+
+Para solucionarlo combinando todo en una sola lista, tienes dos alternativas:
+
+Alternativa A: Usar el método .flat() (ES2019)
+  const todosLosDatos = datos.flat();
+  // Convierte el array de arrays en una única lista: [post1, post2, pagina1...]
+
+Alternativa B: Usar el Spread Operator (...)
+  const todosLosDatos = [...datos[0], ...datos[1], ...datos[2]];
+  // Expande manualmente cada uno de los sub-arreglos dentro de un nuevo arreglo.
+
+Finalmente, usamos la variable combinada "todosLosDatos" para generar el HTML:
+${todosLosDatos.map(dato => `<li><a href="${dato.link}">${dato.title.rendered}</a></li>`).join('')}
+
+*Nota: Usamos ".join('')" al final de la iteración de map para unir los elementos
+de la lista como una sola cadena de texto y evitar que aparezcan comas (,)
+no deseadas en la pantalla de resultados.*
