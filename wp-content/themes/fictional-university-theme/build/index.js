@@ -324,13 +324,14 @@ class Search {
     this.previusValue = this.searchField.value;
   }
   getResults() {
-    const url = `http://fictional-university.local/wp-json/wp/v2/posts?search=${this.searchField.value}`;
+    const url = `${universityData.root_url}/wp-json/wp/v2/posts?search=${this.searchField.value}`;
     fetch(url).then(respuesta => respuesta.json()).then(datos => this.resultDiv.innerHTML = `
           <h2 class="search-overlay__section-title">General Information</h2>
-          <ul class="link-list min-list">
+          ${datos.length ? '<ul class="link-list min-list">' : '<p>No general Information matches that search.</p>'}
             ${datos.map(dato => `<li><a href="${dato.link}">${dato.title.rendered}</a></li>`)}
-          </ul>
-        `).catch(error => console.log('No hay concidencias en su busqueda'));
+          ${datos.length ? '</ul>' : ''}
+        `);
+    this.isSpinnerVisible = false;
   }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Search);
