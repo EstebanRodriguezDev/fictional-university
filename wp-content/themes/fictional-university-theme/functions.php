@@ -1,5 +1,20 @@
 <?php
 
+require get_theme_file_path('/inc/search-route.php');
+
+
+// Añade un campo personalizado 'authorName' a la respuesta de la API REST para los 'post'.
+// 'get_the_author()' recupera el nombre del autor y 'add_action' asegura que
+// esta configuración se cargue al inicializar la API REST.
+function university_custom_rest()
+{
+  register_rest_field('post', 'authorName', array(
+    'get_callback' => function () {
+      return get_the_author();
+    }
+  ));
+}
+add_action('rest_api_init', 'university_custom_rest');
 /**
  * pageBanner: Función reutilizable para generar el banner dinámico (con imagen de fondo, título y subtítulo)
  * en distintas páginas del sitio (como archivos, entradas individuales, páginas estáticas).
@@ -103,14 +118,14 @@ add_action('pre_get_posts', 'university_adjust_queries');
 
 // universityMapKey: Intercepta la configuración de Advanced Custom Fields (ACF) para el campo de Google Maps.
 // Se inyecta la clave API necesaria para que el mapa pueda renderizarse correctamente en el backend y el frontend.
-function universityMapKey($api)
-{
-  $api['key'] = 'AIzaSyBa4cXpvb0iBPuurmTNsIVTpSMN-cXgq8E';
-  return $api;
-}
+// function universityMapKey($api)
+// {
+//   $api['key'] = 'AIzaSyBa4cXpvb0iBPuurmTNsIVTpSMN-cXgq8E';
+//   return $api;
+// }
 
 // add_filter('acf/fields/google_map/api', ...): Engancha nuestra función al filtro específico de ACF para proveer la API key de Maps.
-add_filter('acf/fields/google_map/api', 'universityMapKey');
+// add_filter('acf/fields/google_map/api', 'universityMapKey');
 
 // CLAVE API GOOGLE MAPS
 // AIzaSyBa4cXpvb0iBPuurmTNsIVTpSMN-cXgq8E

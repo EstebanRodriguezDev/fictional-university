@@ -361,14 +361,24 @@ class Search {
     }).then(datos => {
       // Aplana el array de arrays en una sola lista combinada de resultados
       const todosLosDatos = datos.flat();
+
+      // Genera el HTML con los resultados e inyecta en el contenedor.
+      // Si hay datos, abre una lista <ul>; si no, muestra un mensaje de "sin resultados".
+      // Itera sobre cada resultado creando un <li> con enlace. Si es un 'post', añade el nombre del autor.
+      // Cierra la lista </ul> solo si había resultados.
       this.resultDiv.innerHTML = `
           <h2 class="search-overlay__section-title">General Information</h2>
           ${todosLosDatos.length ? '<ul class="link-list min-list">' : '<p>No general Information matches that search.</p>'}
-            ${todosLosDatos.map(dato => `<li><a href="${dato.link}">${dato.title.rendered}</a></li>`).join('')}
+            ${todosLosDatos.map(dato => `<li><a href="${dato.link}">${dato.title.rendered}</a> ${dato.type == 'post' ? `by ${dato.authorName}` : ''}</li>`).join('')}
           ${todosLosDatos.length ? '</ul>' : ''}
         `;
+      this.isSpinnerVisible = false;
+    }).catch(error => {
+      // ERROR: Si algo falla en la red o el servidor, avisamos al usuario y apagamos el spinner
+      console.error("Error en las peticiones del buscador:", error);
+      this.resultDiv.innerHTML = `<p class="search-overlay__error">Sorry, the search failed. Please try again.</p>`;
+      this.isSpinnerVisible = false;
     });
-    this.isSpinnerVisible = false;
   }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Search);
