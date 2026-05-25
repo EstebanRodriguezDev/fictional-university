@@ -108,33 +108,38 @@ class Search {
   }
   // Realiza las peticiones asíncronas concurrentes a la API REST de WordPress.
   getResults() {
-    // Array de endpoints para buscar posts, páginas y programas de forma simultánea.
-    const urls = [
-      `${universityData.root_url}/wp-json/wp/v2/posts?search=${this.searchField.value}`,
-      `${universityData.root_url}/wp-json/wp/v2/pages?search=${this.searchField.value}`,
-      `${universityData.root_url}/wp-json/wp/v2/program?search=${this.searchField.value}`
-    ];
+    const url = `${universityData.root_url}/wp-json/university/v1/search?term=${this.searchField.value}`;
 
-    // Mapea las URLs a promesas fetch y las ejecuta en paralelo con Promise.all
-    Promise.all(urls.map(url => fetch(url)))
-      .then(respuestas => {
-        // Convierte las respuestas crudas del servidor a objetos JSON asíncronamente
-        return Promise.all(respuestas.map(respuesta => respuesta.json()))
-      })
+    fetch(url).then(resultado => resultado.json())
       .then((datos) => {
-        // Aplana el array de arrays en una sola lista combinada de resultados
-        const todosLosDatos = datos.flat();
 
-        // Genera el HTML con los resultados e inyecta en el contenedor.
-        // Si hay datos, abre una lista <ul>; si no, muestra un mensaje de "sin resultados".
-        // Itera sobre cada resultado creando un <li> con enlace. Si es un 'post', añade el nombre del autor.
-        // Cierra la lista </ul> solo si había resultados.
+
         this.resultDiv.innerHTML = `
+      <div class="row">
+        <div class="one-third">
           <h2 class="search-overlay__section-title">General Information</h2>
-          ${todosLosDatos.length ? '<ul class="link-list min-list">' : '<p>No general Information matches that search.</p>'}
-            ${todosLosDatos.map(dato => `<li><a href="${dato.link}">${dato.title.rendered}</a> ${dato.type == 'post' ? `by ${dato.authorName}` : ''}</li>`).join('')}
-          ${todosLosDatos.length ? '</ul>' : ''}
-        `;
+          ${datos.generalInfo.length ? '<ul class="link-list min-list">' : '<p>No general Information matches that search.</p>'}
+            ${datos.generalInfo.map(dato => `<li><a href="${dato.permalink}">${dato.title}</a> ${dato.postType == 'post' ? `by ${dato.author}` : ''}</li>`).join('')}
+          ${datos.generalInfo.length ? '</ul>' : ''}
+        </div>
+        <div class="one-third">
+          <h2 class="search-overlay__section-title">Programs</h2>
+          ${datos.programs.length ? '<ul class="link-list min-list">' : `<p>No programs match that search.<a href="${universityData.root_url}/programs">View all Programs</a></p>`}
+            ${datos.programs.map(dato => `<li><a href="${dato.permalink}">${dato.title}</a></li>`).join('')}
+          ${datos.programs.length ? '</ul>' : ''}
+          <h2 class="search-overlay__section-title">Professors</h2>
+
+        </div>
+        <div class="one-third">
+          <h2 class="search-overlay__section-title">Campuses</h2>
+          ${datos.campuses.length ? '<ul class="link-list min-list">' : `<p>No campuses match that search.<a href="${universityData.root_url}/campuses">View all Campuses</a></p>`}
+            ${datos.campuses.map(dato => `<li><a href="${dato.permalink}">${dato.title}</a></li>`).join('')}
+          ${datos.campuses.length ? '</ul>' : ''}
+          <h2 class="search-overlay__section-title">Events</h2>
+          
+        </div>
+      </div>
+      `;
         this.isSpinnerVisible = false;
       })
       .catch(error => {
@@ -143,6 +148,43 @@ class Search {
         this.resultDiv.innerHTML = `<p class="search-overlay__error">Sorry, the search failed. Please try again.</p>`;
         this.isSpinnerVisible = false;
       });
+
+
+    // // Array de endpoints para buscar posts, páginas y programas de forma simultánea.
+    // const urls = [
+    //   `${universityData.root_url}/wp-json/wp/v2/posts?search=${this.searchField.value}`,
+    //   `${universityData.root_url}/wp-json/wp/v2/pages?search=${this.searchField.value}`,
+    //   `${universityData.root_url}/wp-json/wp/v2/program?search=${this.searchField.value}`
+    // ];
+
+    // // Mapea las URLs a promesas fetch y las ejecuta en paralelo con Promise.all
+    // Promise.all(urls.map(url => fetch(url)))
+    //   .then(respuestas => {
+    //     // Convierte las respuestas crudas del servidor a objetos JSON asíncronamente
+    //     return Promise.all(respuestas.map(respuesta => respuesta.json()))
+    //   })
+    //   .then((datos) => {
+    //     // Aplana el array de arrays en una sola lista combinada de resultados
+    //     const todosLosDatos = datos.flat();
+
+    //     // Genera el HTML con los resultados e inyecta en el contenedor.
+    //     // Si hay datos, abre una lista <ul>; si no, muestra un mensaje de "sin resultados".
+    //     // Itera sobre cada resultado creando un <li> con enlace. Si es un 'post', añade el nombre del autor.
+    //     // Cierra la lista </ul> solo si había resultados.
+    //     this.resultDiv.innerHTML = `
+    //       <h2 class="search-overlay__section-title">General Information</h2>
+    //       ${todosLosDatos.length ? '<ul class="link-list min-list">' : '<p>No general Information matches that search.</p>'}
+    //         ${todosLosDatos.map(dato => `<li><a href="${dato.link}">${dato.title.rendered}</a> ${dato.type == 'post' ? `by ${dato.authorName}` : ''}</li>`).join('')}
+    //       ${todosLosDatos.length ? '</ul>' : ''}
+    //     `;
+    //     this.isSpinnerVisible = false;
+    //   })
+    //   .catch(error => {
+    //     // ERROR: Si algo falla en la red o el servidor, avisamos al usuario y apagamos el spinner
+    //     console.error("Error en las peticiones del buscador:", error);
+    //     this.resultDiv.innerHTML = `<p class="search-overlay__error">Sorry, the search failed. Please try again.</p>`;
+    //     this.isSpinnerVisible = false;
+    //   });
   }
 }
 
