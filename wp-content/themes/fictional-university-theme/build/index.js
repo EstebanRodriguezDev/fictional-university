@@ -367,7 +367,16 @@ class Search {
             ${datos.programs.map(dato => `<li><a href="${dato.permalink}">${dato.title}</a></li>`).join('')}
           ${datos.programs.length ? '</ul>' : ''}
           <h2 class="search-overlay__section-title">Professors</h2>
-
+          ${datos.professors.length ? '<ul class="professor-cards">' : `<p>No professors match that search.</p>`}
+            ${datos.professors.map(dato => `
+            <li class="professor-card__list-item">
+              <a class="professor-card" href="${dato.permalink}">
+              <img class="professor-card__image" src="${dato.image}">
+              <span class="professor-card__name">${dato.title}</span>
+              </a>
+            </li>
+              `).join('')}
+          ${datos.professors.length ? '</ul>' : ''}
         </div>
         <div class="one-third">
           <h2 class="search-overlay__section-title">Campuses</h2>
@@ -375,7 +384,19 @@ class Search {
             ${datos.campuses.map(dato => `<li><a href="${dato.permalink}">${dato.title}</a></li>`).join('')}
           ${datos.campuses.length ? '</ul>' : ''}
           <h2 class="search-overlay__section-title">Events</h2>
-          
+            ${datos.events.length ? '' : `<p>No Events match that search.<a href="${universityData.root_url}/events">View all Events</a></p>`}
+            ${datos.events.map(dato => `
+            <div class="event-summary">
+              <a class="event-summary__date t-center" href="${dato.permalink}">
+                <span class="event-summary__month">${dato.month}</span>
+                <span class="event-summary__day">${dato.day}</span>
+              </a>
+              <div class="event-summary__content">
+              <h5 class="event-summary__title headline headline--tiny"><a href="${dato.permalink}">${dato.title}</a></h5>
+              <p>${dato.description}<a href="${dato.permalink}" class="nu gray">Learn more</a></p>
+              </div>
+            </div>
+              `).join('')}
         </div>
       </div>
       `;
