@@ -14,16 +14,23 @@ function universityRegisterSearch()
 }
 
 // Filtro personalizado para interceptar la consulta SQL y obligarla a buscar SOLO en el título.
-function university_search_by_title_only($search, $wp_query)
+/**
+ * Modifica la cláusula SQL de búsqueda para que sólo considere el título del post.
+ *
+ * @param string $search   La cláusula de búsqueda original.
+ * @param WP_Query $wp_query El objeto de consulta de WordPress.
+ * @return string La cláusula de búsqueda modificada.
+ */
+function university_search_by_title_only($search, WP_Query $wp_query)
 {
  global $wpdb; // Objeto global de la base de datos de WordPress.
- 
+
  // Si no hay búsqueda, devolvemos el SQL intacto.
  if (empty($search)) return $search;
 
  // Extraemos el término exacto que el usuario buscó.
  $search_term = $wp_query->query_vars['s'];
- 
+
  // Reescribimos el SQL para que busque EXCLUSIVAMENTE en la columna post_title (evitando el post_content).
  // Usamos esc_like para proteger contra inyección SQL.
  $search = " AND ({$wpdb->posts}.post_title LIKE '%" . $wpdb->esc_like($search_term) . "%') ";
@@ -35,6 +42,7 @@ function university_search_by_title_only($search, $wp_query)
 function universitySearchResults(WP_REST_Request $data)
 {
  // 1. Enganchamos el filtro JUSTO antes de ejecutar nuestra consulta para limitar la búsqueda al título.
+ // add_filter($hook_name, $callback, $priority, $accepted_args) -> Nombre del hook, Funcion, prioridad a ejecutarse el filter y la cantidad de argumentos que tiene la funcion.
  add_filter('posts_search', 'university_search_by_title_only', 10, 2);
 
  // Ejecuta la consulta principal buscando el término en múltiples Custom Post Types.
@@ -68,7 +76,7 @@ function universitySearchResults(WP_REST_Request $data)
     'postType' => get_post_type(),
    ));
   }
-  
+
   // Si es un profesor, extraemos su título, link e imagen destacada.
   if (get_post_type() == 'professor') {
    array_push($results['professors'], array(
@@ -77,16 +85,27 @@ function universitySearchResults(WP_REST_Request $data)
     'image' => get_the_post_thumbnail_url(0, 'professorLandscape'),
    ));
   }
-  
+
   // Si es un programa, lo guardamos e incluimos su ID (clave para la búsqueda relacional posterior).
   if (get_post_type() == 'program') {
+   $relatedCampuses = get_field('related_campus');
+
+   if ($relatedCampuses) {
+    foreach ($relatedCampuses as $campus) {
+     array_push($results['campuses'], array(
+      'title' => get_the_title($campus),
+      'permalink' => get_the_permalink($campus),
+     ));
+    }
+   }
+
    array_push($results['programs'], array(
     'title' => get_the_title(),
     'permalink' => get_the_permalink(),
     'id' => get_the_ID(), // ¡Fundamental para relacionar materias con profesores!
    ));
   }
-  
+
   // Si es un campus.
   if (get_post_type() == 'campus') {
    array_push($results['campuses'], array(
@@ -94,7 +113,7 @@ function universitySearchResults(WP_REST_Request $data)
     'permalink' => get_the_permalink(),
    ));
   }
-  
+
   // Si es un evento, procesamos la fecha y creamos un extracto personalizado de 18 palabras si es necesario.
   if (get_post_type() == 'event') {
    $eventDate = new DateTime(get_field('event_date')); // Obtiene fecha de ACF.
@@ -131,19 +150,36 @@ function universitySearchResults(WP_REST_Request $data)
 
   // Ejecutamos una segunda consulta para obtener exclusivamente a esos profesores.
   $programRelationshipQuery = new WP_Query(array(
-   'post_type' => 'professor',
+   'post_type' => array('professor', 'event'),
    'meta_query' => $programsMetaQuery,
   ));
 
   // Recorremos los profesores encontrados en la búsqueda relacional.
   while ($programRelationshipQuery->have_posts()) {
    $programRelationshipQuery->the_post();
-   
+
    if (get_post_type() == 'professor') {
     array_push($results['professors'], array(
      'title' => get_the_title(),
      'permalink' => get_the_permalink(),
      'image' => get_the_post_thumbnail_url(0, 'professorLandscape'),
+    ));
+   }
+   if (get_post_type() == 'event') {
+    $eventDate = new DateTime(get_field('event_date')); // Obtiene fecha de ACF.
+    $description = null;
+    if (has_excerpt()) {
+     $description = get_the_excerpt();
+    } else {
+     $description = wp_trim_words(get_the_content(), 18);
+    }
+
+    array_push($results['events'], array(
+     'title' => get_the_title(),
+     'permalink' => get_the_permalink(),
+     'month' => $eventDate->format('M'),
+     'day' => $eventDate->format('d'),
+     'description' => $description,
     ));
    }
   }
@@ -152,6 +188,7 @@ function universitySearchResults(WP_REST_Request $data)
   // aparecería dos veces. array_unique limpia los duplicados comparando objetos (SORT_REGULAR), y 
   // array_values reindexa el array para que el JSON resultante sea válido ([...] en lugar de {...}).
   $results['professors'] = array_values(array_unique($results['professors'], SORT_REGULAR));
+  $results['events'] = array_values(array_unique($results['events'], SORT_REGULAR));
  }
 
  // WordPress se encarga de convertir este array asociativo en un string JSON y lo envía al Frontend.

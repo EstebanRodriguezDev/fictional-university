@@ -12,13 +12,9 @@
 ## Fecha: 
 - 
 
-Fecha: 26/5/2026
+Fecha: 27/5/2026
 
 Tipo de cambio:
 
-1- Hay que agregar un nuevo campo personalizado ( Main Body Content).
-Etiqueta: Main body Content
-tipo de campo: Editor WYSIWYG
-Presentacion -> Alta(despues del titulo)
-Reglas de ubicacion -> program
+1- Hay que crear una nueva pagina Search
 
