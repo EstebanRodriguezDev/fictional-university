@@ -12,14 +12,13 @@
 ## Fecha: 
 - 
 
-Fecha: 18/5/2026
+Fecha: 26/5/2026
 
 Tipo de cambio:
 
-1- Hay que descargar postman en el trabajo para poder trabajar con la REST API de WP
+1- Hay que agregar un nuevo campo personalizado ( Main Body Content).
+Etiqueta: Main body Content
+tipo de campo: Editor WYSIWYG
+Presentacion -> Alta(despues del titulo)
+Reglas de ubicacion -> program
 
-Fecha: 19/5/2026
-
-Tipo de cambio: 
-
-1- Hay que agregar un post con el titulo "Biology is cool" con algo de lorem ipsum.
