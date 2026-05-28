@@ -16,5 +16,9 @@ Fecha: 27/5/2026
 
 Tipo de cambio:
 
-1- Hay que crear una nueva pagina Search
+1- Hay que crear una nueva pagina Search ( listo)
+
+2- Hay que agregar un usuario con el rol de "Editor" - Hacerlo en el trabajo
+
+3- Instalar nuevo plugin - Members and roles by memberpress
 

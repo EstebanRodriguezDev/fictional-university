@@ -262,7 +262,8 @@ class Search {
   events() {
     // Al hacer clic en el botón de abrir, ejecuta openOverlay. bind(this) asegura que 'this' siga refiriéndose a la clase Search.
     // this.openButton.addEventListener('click', this.openOverlay.bind(this));
-    this.openButton.addEventListener('click', () => {
+    this.openButton.addEventListener('click', e => {
+      e.preventDefault(); // previene la funcion de la etiqueta <a></a>
       this.openOverlay();
     });
     // Al hacer clic en el botón de cerrar, ejecuta closeOverlay.

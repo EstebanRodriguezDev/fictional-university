@@ -57,10 +57,7 @@ while (have_posts()) { // while (have_posts()): Inicia el "Loop" de WordPress. h
    </div>
   <?php } ?>
   <div class="generic-content">
-   <form method="get" action="<?php echo esc_url(site_url('/')) ?>">
-    <input type="search" name="s">
-    <input type="submit" value="Search">
-   </form>
+   <?php get_search_form(); ?>
   </div>
  </div>
 <?php }
