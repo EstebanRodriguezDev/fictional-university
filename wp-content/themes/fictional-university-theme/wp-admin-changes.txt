@@ -16,9 +16,7 @@ Fecha: 27/5/2026
 
 Tipo de cambio:
 
-1- Hay que crear una nueva pagina Search ( listo)
-
-2- Hay que agregar un usuario con el rol de "Editor" - Hacerlo en el trabajo
-
-3- Instalar nuevo plugin - Members and roles by memberpress
-
+1- Creamos 2 roles nuevos con todos los permisos activos.
+ a) Event Planner. b)Campus Manager y se los asignamos al usuario KittyDoe.
+2- Asignar los permisos de event y campus al usuario administrador.
+3- Ir ajustes generales y colocar miembros:Cualquiera puede registrarse (subscriptor)

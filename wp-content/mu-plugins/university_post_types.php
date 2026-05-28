@@ -8,6 +8,8 @@ function university_post_types()
 
   // Registro del tipo de contenido 'Campus' ()
   register_post_type('campus', array(
+    'capability_type' => 'campus',
+    'map_meta_cap' => true,
     'supports' => array('title', 'editor', 'excerpt'), // Define qué secciones aparecen en el editor.
     'rewrite' => array('slug' => 'campuses'), // Cambia la URL base de /campus/ a /campuses/ (más amigable).
     'has_archive' => true, // Habilita la página de listado automático (archive-campus.php).
@@ -25,6 +27,8 @@ function university_post_types()
 
   // Registro del tipo de contenido 'Event' (Eventos)
   register_post_type('event', array(
+    'capability_type' => 'event',
+    'map_meta_cap' => true,
     'supports' => array('title', 'editor', 'excerpt'), // Define qué secciones aparecen en el editor.
     'rewrite' => array('slug' => 'events'), // Cambia la URL base de /event/ a /events/ (más amigable).
     'has_archive' => true, // Habilita la página de listado automático (archive-event.php).
