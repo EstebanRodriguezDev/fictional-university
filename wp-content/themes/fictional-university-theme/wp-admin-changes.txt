@@ -19,5 +19,3 @@ Tipo de cambio para el trabajo:
 
 1- Hay que eliminar el usuario kittyDoe luego hay que registrar un nuevo usuario desde el wp-signup.php con el nombre kittyDoe y el email correo@correo.com
 2- Actualizar el panel de WP (user) y colocar una contraseña nueva para luego ingresar con el usuario. 
-usuario: KittyDoe
-contraseña: KittyDoe#

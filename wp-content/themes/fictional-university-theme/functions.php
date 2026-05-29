@@ -137,6 +137,31 @@ function noSubsAdminBar()
     show_admin_bar(false);
   }
 }
+
+// Customize Login Screen
+
+add_action('login_headerurl', 'ourHeaderUrl');
+
+function ourHeaderUrl()
+{
+  return esc_url(site_url('/'));
+}
+
+add_action('login_enqueue_scripts', 'ourLoginCSS');
+
+function ourLoginCSS()
+{
+  wp_enqueue_style('google-fonts', '//fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i|Roboto:100,300,400,400i,700,700i');
+  wp_enqueue_style('font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+  wp_enqueue_style('university_main_styles', get_theme_file_uri('/build/style-index.css'));
+  wp_enqueue_style('university_extra_styles', get_theme_file_uri('/build/index.css'));
+}
+add_action('login_headertitle', 'ourLoginTitle');
+
+function ourLoginTitle()
+{
+  return get_bloginfo('name');
+}
 // universityMapKey: Intercepta la configuración de Advanced Custom Fields (ACF) para el campo de Google Maps.
 // Se inyecta la clave API necesaria para que el mapa pueda renderizarse correctamente en el backend y el frontend.
 // function universityMapKey($api)
