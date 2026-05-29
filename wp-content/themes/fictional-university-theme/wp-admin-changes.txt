@@ -12,11 +12,12 @@
 ## Fecha: 
 - 
 
-Fecha: 27/5/2026
+Fecha: 28/5/2026
 
-Tipo de cambio:
+Tipo de cambio para el trabajo:
 
-1- Creamos 2 roles nuevos con todos los permisos activos.
- a) Event Planner. b)Campus Manager y se los asignamos al usuario KittyDoe.
-2- Asignar los permisos de event y campus al usuario administrador.
-3- Ir ajustes generales y colocar miembros:Cualquiera puede registrarse (subscriptor)
+
+1- Hay que eliminar el usuario kittyDoe luego hay que registrar un nuevo usuario desde el wp-signup.php con el nombre kittyDoe y el email correo@correo.com
+2- Actualizar el panel de WP (user) y colocar una contraseña nueva para luego ingresar con el usuario. 
+usuario: KittyDoe
+contraseña: KittyDoe#

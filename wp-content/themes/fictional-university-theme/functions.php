@@ -115,7 +115,28 @@ function university_adjust_queries($query)
 }
 add_action('pre_get_posts', 'university_adjust_queries');
 
+add_action('admin_init', 'redirectSubsToFrontend');
 
+function redirectSubsToFrontend()
+{
+  $ourCurrentUser = wp_get_current_user();
+
+  if (count($ourCurrentUser->roles) == 1 and $ourCurrentUser->roles[0] == 'subscriber') {
+    wp_redirect(site_url('/'));
+    exit();
+  }
+}
+
+add_action('wp_loaded', 'noSubsAdminBar');
+
+function noSubsAdminBar()
+{
+  $ourCurrentUser = wp_get_current_user();
+
+  if (count($ourCurrentUser->roles) == 1 and $ourCurrentUser->roles[0] == 'subscriber') {
+    show_admin_bar(false);
+  }
+}
 // universityMapKey: Intercepta la configuración de Advanced Custom Fields (ACF) para el campo de Google Maps.
 // Se inyecta la clave API necesaria para que el mapa pueda renderizarse correctamente en el backend y el frontend.
 // function universityMapKey($api)
