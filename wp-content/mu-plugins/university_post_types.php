@@ -64,7 +64,7 @@ function university_post_types()
   // Registro del tipo de contenido 'Professor' (Profesores)
   register_post_type('professor', array(
     // Sugerencia: Añadir 'thumbnail' a supports si deseas usar la "Imagen Destacada" nativa de WP.
-    'supports' => array('title', 'editor', 'excerpt', 'thumbnail'),
+    'supports' => array('title', 'editor', 'thumbnail'),
     'public' => true,
     'show_in_rest' => true,
     'labels' => array(
@@ -75,6 +75,21 @@ function university_post_types()
       'singular_name' => 'Professor'
     ),
     'menu_icon' => 'dashicons-welcome-learn-more'
+  ));
+  // Registro del tipo de contenido 'Notas' (Mi Notas)
+  register_post_type('note', array(
+    'supports' => array('title', 'editor'),
+    'public' => false,
+    'show_ui' => true,
+    'show_in_rest' => true,
+    'labels' => array(
+      'name' => 'Notes',
+      'add_new_item' => 'Add New Note',
+      'edit_item' => 'Edit Note',
+      'all_items' => 'All Notes',
+      'singular_name' => 'Note'
+    ),
+    'menu_icon' => 'dashicons-welcome-write-blog'
   ));
 }
 // add_action('init', ...): Registra los tipos de post cuando WordPress inicializa el sitio.

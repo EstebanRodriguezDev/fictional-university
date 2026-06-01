@@ -9,13 +9,14 @@
 
 -------------------------------------------------
 
-## Fecha: 
-- 
+## Fecha: 31/5
 
-Fecha: 28/5/2026
+[Tipo de cambio]
 
-Tipo de cambio para el trabajo:
+Hay que agregar dos notas en el custom post type de My Notes. 
+
+Titulo -> biology Note #10 / Contenido -> Lorem ipsum
+Titulo -> Math Lecture #1 / Contenido -> Lorem ipsum
 
 
-1- Hay que eliminar el usuario kittyDoe luego hay que registrar un nuevo usuario desde el wp-signup.php con el nombre kittyDoe y el email correo@correo.com
-2- Actualizar el panel de WP (user) y colocar una contraseña nueva para luego ingresar con el usuario. 
+
