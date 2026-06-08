@@ -29,7 +29,8 @@ while (have_posts()) { // while (have_posts()): Inicia el "Loop" de WordPress. h
      <span class="edit-note">
       <i class="fa fa-pencil" aria-hidden="true"></i>Edit</span>
      <span class="delete-note">
-      <i class="fa fa-transh-o" aria-hidden="true"></i>Delete</span>
+      <i class="fa fa-trash-o" aria-hidden="true"></i>Delete
+     </span>
      <textarea class="note-body-field"><?php echo esc_textarea(wp_strip_all_tags(get_the_content())); ?></textarea>
     </li>
    <?php } ?>

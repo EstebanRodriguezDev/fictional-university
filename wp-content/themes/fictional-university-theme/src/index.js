@@ -1,12 +1,13 @@
 // Importa el archivo principal de estilos SCSS para que Webpack lo procese y lo incluya en el build final.
 import "../css/style.scss"
 
-// Our modules / classes
+
 // Importa las diferentes clases de Javascript que controlan funcionalidades específicas de la página.
 import MobileMenu from "./modules/MobileMenu"
 import HeroSlider from "./modules/HeroSlider"
 import GoogleMap from "./modules/GoogleMap";
 import Search from "./modules/Search";
+import MyNotes from "./modules/MyNotes";
 
 // document.addEventListener('DOMContentLoaded', ...): Se asegura de que el código JavaScript
 // se ejecute sólo después de que todo el documento HTML (el DOM) haya cargado completamente.
@@ -17,4 +18,5 @@ document.addEventListener('DOMContentLoaded', () => {
  const heroSlider = new HeroSlider()
  const googleMap = new GoogleMap();
  const search = new Search(); // Inicializa el módulo de búsqueda superpuesta.
+ const myNotes = new MyNotes();
 })
