@@ -242,20 +242,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "jquery");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+
 class MyNotes {
   constructor() {
-    this.notaEliminada = document.querySelectorAll(".delete-note");
+    this.eliminarNota = document.querySelectorAll(".delete-note");
+    this.editarNota = document.querySelectorAll(".edit-note");
     this.events();
   }
   events() {
-    this.notaEliminada.forEach(nota => {
+    this.eliminarNota.forEach(nota => {
       nota.addEventListener("click", this.deleteNote);
+    });
+    this.editarNota.forEach(nota => {
+      nota.addEventListener("click", this.editNote);
     });
   }
 
   // Metodos aqui
-  deleteNote() {
-    const url = `${universityData.root_url}/wp-json/wp/v2/note/111`;
+  deleteNote(e) {
+    const liElement = e.target.parentElement;
+    const thisNote = liElement.getAttribute('data-id');
+    const url = `${universityData.root_url}/wp-json/wp/v2/note/${thisNote}`;
     fetch(url, {
       headers: {
         'X-WP-Nonce': `${universityData.nonce}`
@@ -263,13 +272,21 @@ class MyNotes {
       method: 'DELETE'
     }).then(response => {
       if (response.ok) {
-        console.log('success');
-        console.log(response);
-      } else {
-        console.log('Fail');
-        console.log(response);
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()(liElement).slideUp();
       }
-    }).catch(error => console.log(error));
+    }).catch(error => console.log(error.message));
+  }
+  editNote(e) {
+    const liElement = e.target.parentElement;
+    const titleField = liElement.querySelector(".note-title-field");
+    const bodyField = liElement.querySelector(".note-body-field");
+    const noteUpdate = liElement.querySelector(".update-note");
+    noteUpdate.classList.add("update-note--visible");
+    console.log(noteUpdate);
+    titleField.removeAttribute("readonly");
+    titleField.classList.add("note-active-field");
+    bodyField.removeAttribute("readonly");
+    bodyField.classList.add('note-active-field');
   }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MyNotes);
@@ -505,6 +522,16 @@ class Search {
 __webpack_require__.r(__webpack_exports__);
 // extracted by mini-css-extract-plugin
 
+
+/***/ },
+
+/***/ "jquery"
+/*!*************************!*\
+  !*** external "jQuery" ***!
+  \*************************/
+(module) {
+
+module.exports = window["jQuery"];
 
 /***/ },
 
@@ -4479,6 +4506,18 @@ var Glide = /*#__PURE__*/function (_Core) {
 /******/ 				}
 /******/ 			}
 /******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
 /******/ 		};
 /******/ 	})();
 /******/ 	
