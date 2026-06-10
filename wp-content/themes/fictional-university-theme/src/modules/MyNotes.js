@@ -138,6 +138,7 @@ class MyNotes {
       this.makeNoteEditable(liElement); // Readonly presente → desbloquear para editar
     } else {
       this.makeNoteReadOnly(liElement); // Sin readonly → el usuario canceló, bloquear de nuevo
+      console.log()
     }
   }
 

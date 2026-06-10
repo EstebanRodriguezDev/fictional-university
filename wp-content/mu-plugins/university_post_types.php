@@ -78,6 +78,8 @@ function university_post_types()
   ));
   // Registro del tipo de contenido 'Notas' (Mi Notas)
   register_post_type('note', array(
+    'capability_type' => 'note',
+    'map_meta_cap' => true,
     'supports' => array('title', 'editor'),
     'public' => false,
     'show_ui' => true,
