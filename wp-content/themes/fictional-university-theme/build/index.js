@@ -249,9 +249,7 @@ __webpack_require__.r(__webpack_exports__);
 class MyNotes {
   // Selecciona los botones del DOM e inicializa los eventos
   constructor() {
-    this.eliminarNota = document.querySelectorAll(".delete-note");
-    this.editarNota = document.querySelectorAll(".edit-note");
-    this.guardarNota = document.querySelectorAll(".update-note");
+    this.listaNotas = document.querySelector('#my-notes');
     this.enviarNota = document.querySelector(".submit-note");
     this.events();
   }
@@ -260,14 +258,17 @@ class MyNotes {
   // .bind(this) mantiene el contexto de la clase para poder usar this.makeNoteEditable(), etc.
   events() {
     this.enviarNota.addEventListener("click", this.createNote.bind(this));
-    this.eliminarNota.forEach(nota => {
-      nota.addEventListener("click", this.deleteNote);
-    });
-    this.editarNota.forEach(nota => {
-      nota.addEventListener("click", this.editNote.bind(this));
-    });
-    this.guardarNota.forEach(nota => {
-      nota.addEventListener("click", this.updateNote.bind(this));
+    this.listaNotas.addEventListener("click", e => {
+      console.log(e.target);
+      if (e.target.closest('.delete-note')) {
+        this.deleteNote(e);
+      }
+      if (e.target.closest('.edit-note')) {
+        this.editNote(e);
+      }
+      if (e.target.closest('.update-note')) {
+        this.updateNote(e);
+      }
     });
   }
   createNote(e) {
@@ -277,11 +278,10 @@ class MyNotes {
 
     // Captura los valores actuales de los campos de título y contenido
     const ourNewPost = {
-      title: noteTitle.value,
-      content: noteBody.value
+      'title': noteTitle.value,
+      'content': noteBody.value,
+      'status': 'publish'
     };
-    console.log(ourNewPost.title);
-    console.log(ourNewPost.content);
     fetch(url, {
       headers: {
         'Content-Type': 'application/json',
@@ -290,12 +290,44 @@ class MyNotes {
       },
       method: 'POST',
       body: JSON.stringify(ourNewPost) // Convierte el objeto JS a string JSON (fetch requiere body)
-    }).then(response => {
-      if (response.ok) {
+    }).then(respuesta => respuesta.json()).then(resultado => {
+      console.log(resultado);
+      if (resultado) {
         noteTitle.value = '';
         noteBody.value = '';
-        console.log(response);
-        console.log(noteTitle, noteBody);
+        const ulNotes = document.querySelector('#my-notes');
+        const htmlString = `
+          <li data-id="${resultado.id}">
+          <input readonly class="note-title-field" value="${resultado.title.raw}">
+          <span class="edit-note">
+            <i class="fa fa-pencil" aria-hidden="true"></i>Edit</span>
+          <span class="delete-note">
+            <i class="fa fa-trash-o" aria-hidden="true"></i>Delete
+          </span>
+          <textarea readonly class="note-body-field">${resultado.content.raw}</textarea>
+          <span class="update-note btn btn--blue btn--small">
+            <i class="fa fa-arrow-right" aria-hidden="true"></i>Save</span>
+          </li>
+          
+          `;
+        ulNotes.insertAdjacentHTML('afterbegin', htmlString);
+
+        // Inmediatamente le aplicas una animación nativa para simular el slideDown
+        ulNotes.firstElementChild.animate([{
+          height: '0px',
+          opacity: 0,
+          overflow: 'hidden'
+        },
+        // Estado inicial (oculto)
+        {
+          height: ulNotes.firstElementChild.scrollHeight + 'px',
+          opacity: 1
+        } // Estado final (tamaño real)
+        ], {
+          duration: 400,
+          // Duración en milisegundos (equivalente a slideDown normal)
+          easing: 'ease-out'
+        });
       }
     }).catch(error => console.log(error.message));
   }
@@ -328,8 +360,6 @@ class MyNotes {
       title: liElement.querySelector(".note-title-field").value,
       content: liElement.querySelector(".note-body-field").value
     };
-    console.log(ourUpdatePost.title);
-    console.log(ourUpdatePost.content);
     fetch(url, {
       headers: {
         'Content-Type': 'application/json',
@@ -341,7 +371,6 @@ class MyNotes {
     }).then(response => {
       if (response.ok) {
         this.makeNoteReadOnly(liElement); // Bloquea los campos tras guardar exitosamente
-        console.log(response);
       }
     }).catch(error => console.log(error.message));
   }
