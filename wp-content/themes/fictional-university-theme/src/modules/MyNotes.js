@@ -1,4 +1,4 @@
-import $ from 'jquery'; // Importa jQuery para animaciones como .slideUp()
+import $, { error } from 'jquery'; // Importa jQuery para animaciones como .slideUp()
 
 class MyNotes {
   // Selecciona los botones del DOM e inicializa los eventos
@@ -13,7 +13,6 @@ class MyNotes {
   events() {
     this.enviarNota.addEventListener("click", this.createNote.bind(this));
     this.listaNotas.addEventListener("click", (e) => {
-      console.log(e.target);
       if (e.target.closest('.delete-note')) {
         this.deleteNote(e);
       }
@@ -26,7 +25,7 @@ class MyNotes {
     });
 
   }
-  createNote(e) {
+  createNote() {
     const noteTitle = document.querySelector('.new-note-title');
     const noteBody = document.querySelector('.new-note-body');
     const url = `${universityData.root_url}/wp-json/wp/v2/note/`;
@@ -45,7 +44,15 @@ class MyNotes {
       method: 'POST',
       body: JSON.stringify(ourNewPost), // Convierte el objeto JS a string JSON (fetch requiere body)
     })
-      .then(respuesta => respuesta.json())
+      .then(async respuesta => {
+        // 1. Como enviamos un 403, respuesta.ok será FALSE
+        if (!respuesta.ok) {
+          const datosError = await respuesta.json();
+          // Lanzamos al catch el texto que viene dentro de 'data'
+          throw new Error(datosError.data);
+        }
+        return respuesta.json()
+      })
       .then((resultado) => {
         console.log(resultado);
         if (resultado) {
@@ -79,7 +86,13 @@ class MyNotes {
           });
         }
       })
-      .catch(error => console.log(error.message))
+      .catch(error => {
+        // 2. Aquí capturamos el mensaje "You have reached your note limit."
+        if (error.message === "You have reached your note limit.") {
+          document.querySelector('.note-limit-message').classList.add('active');
+        }
+        console.log(error.message);
+      })
   }
   // Elimina una nota del servidor y la oculta del DOM con animación
   deleteNote(e) {
@@ -94,10 +107,21 @@ class MyNotes {
       },
       method: 'DELETE',
     })
-      .then(response => {
+      .then(async response => {
+
         if (response.ok) {
-          $(liElement).slideUp(); // Animación jQuery para ocultar la nota eliminada
+          // 1. La animación de jQuery funciona perfecto aquí
+          $(liElement).slideUp();
+
+          // 2. "Abrimos" el sobre para extraer el JSON real que envió WordPress
+          const datos = await response.json();
+
+          // 3. Ahora sí, la propiedad vive dentro del JSON parseado, NO en 'response'
+          if (datos.userNoteCount < 5) {
+            document.querySelector('.note-limit-message').classList.remove('active');
+          }
         }
+
       })
       .catch(error => console.log(error.message))
   }

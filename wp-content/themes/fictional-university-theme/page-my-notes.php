@@ -20,6 +20,7 @@ while (have_posts()) { // while (have_posts()): Inicia el "Loop" de WordPress. h
       <input class="new-note-title" type="text" placeholder="Title">
       <textarea class="new-note-body" name="" id="" placeholder="Your Note here..."></textarea>
       <span class="submit-note">Create Note</span>
+      <span class="note-limit-message">Note Limit Reached: delete an existing note to make room for a new one.</span>
     </div>
     <ul class="min-list link-list" id="my-notes">
       <?php
