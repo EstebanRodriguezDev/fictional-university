@@ -9,14 +9,11 @@
 
 -------------------------------------------------
 
-## Fecha: 31/5
+## Fecha: 11/6
 
 [Tipo de cambio]
+ 
 
-Hay que agregar dos notas en el custom post type de My Notes. 
-
-Titulo -> biology Note #10 / Contenido -> Lorem ipsum
-Titulo -> Math Lecture #1 / Contenido -> Lorem ipsum
-
+1. Hay que Agregar un nuevo grupo de campos en ACF (Liked Professor ID) / Tipo de campo: Number / Etiqueta del campo: Liked Professor ID / post type -> like
 
 

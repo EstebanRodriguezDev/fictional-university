@@ -5,7 +5,9 @@ class MyNotes {
   constructor() {
     this.listaNotas = document.querySelector('#my-notes');
     this.enviarNota = document.querySelector(".submit-note");
-    this.events();
+    if (this.listaNotas && this.enviarNota) {
+      this.events();
+    }
   }
 
   // Asigna eventos click a cada grupo de botones.
