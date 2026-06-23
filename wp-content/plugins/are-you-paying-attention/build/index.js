@@ -74,25 +74,64 @@ wp.blocks.registerBlockType("ourplugin/are-you-paying-attention", {
   apiVersion: 3,
   icon: "smiley",
   category: "common",
-  edit: () => {
+  attributes: {
+    skyColor: {
+      type: "string"
+    },
+    grassColor: {
+      type: "string"
+    }
+  },
+  edit: props => {
+    function updateSkyColor(event) {
+      props.setAttributes({
+        skyColor: event.target.value
+      });
+    }
+    function updateGrassColor(event) {
+      props.setAttributes({
+        grassColor: event.target.value
+      });
+    }
     const blockProps = useBlockProps();
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
       ...blockProps,
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", {
-        children: "Hello, this is paragraph"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h4", {
-        children: "Hi there"
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", {
+        type: "text",
+        placeholder: "sky Color",
+        value: props.attributes.skyColor,
+        onChange: updateSkyColor
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", {
+        type: "text",
+        placeholder: "grass Color",
+        value: props.attributes.grassColor,
+        onChange: updateGrassColor
       })]
     });
   },
-  save: () => {
+  save: props => {
+    const blockProps = useBlockProps.save();
     // Dejamos el save simple sin blockProps, que es totalmente válido
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h5", {
-      children: "This is a H5"
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", {
+      ...blockProps,
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {
+        children: ["Today the sky is ", props.attributes.skyColor, " and the grass is", " ", props.attributes.grassColor, "."]
+      })
     });
-  }
+  },
+  deprecated: [{
+    save: props => {
+      const blockProps = useBlockProps.save();
+      // Dejamos el save simple sin blockProps, que es totalmente válido
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", {
+        ...blockProps,
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {
+          children: ["Today the sky is ", props.attributes.skyColor, " and the grass is", " ", props.attributes.grassColor, "."]
+        })
+      });
+    }
+  }]
 });
-console.log("ok");
 })();
 
 /******/ })()
