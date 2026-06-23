@@ -17,11 +17,12 @@ while (have_posts()) {
         </div>
         <div class="two-thirds">
           <?php
+          // Consulta para obtener la cantidad total de "likes" de este profesor
           $likeCount = new WP_Query(array(
             'post_type' => 'like',
             'meta_query' => array(
               array(
-                'key' => 'liked_professor_id',
+                'key' => 'liked_professor_id', // Busca por el ID del profesor que fue "likeado"
                 'compare' => '=',
                 'value' => get_the_ID(),
               )
@@ -29,9 +30,11 @@ while (have_posts()) {
           ));
           $existStatus = 'no';
           $like_id = '';
+          
+          // Si el usuario está logueado, verificamos si él específicamente le ha dado "like" a este profesor
           if (is_user_logged_in()) {
             $existQuery = new WP_Query(array(
-              'author' => get_current_user_id(),
+              'author' => get_current_user_id(), // Solo likes del usuario actual
               'post_type' => 'like',
               'meta_query' => array(
                 array(
@@ -41,6 +44,7 @@ while (have_posts()) {
                 )
               )
             ));
+            // Si encuentra un registro, el estado cambia a 'yes' y guardamos el ID del "like" para poder eliminarlo después
             if ($existQuery->found_posts) {
               $existStatus = 'yes';
               $like_id = $existQuery->posts[0]->ID;

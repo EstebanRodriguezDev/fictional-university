@@ -24,10 +24,11 @@ while (have_posts()) { // while (have_posts()): Inicia el "Loop" de WordPress. h
     </div>
     <ul class="min-list link-list" id="my-notes">
       <?php
+      // Consulta personalizada para obtener todas las notas del usuario actual
       $userNotes = new WP_Query(array(
         'post_type' => 'note',
-        'posts_per_page' => -1,
-        'author' => get_current_user_id(),
+        'posts_per_page' => -1, // -1 para mostrar todas las notas
+        'author' => get_current_user_id(), // Filtra por el ID del usuario logueado
       ));
       while ($userNotes->have_posts()) {
         $userNotes->the_post(); ?>

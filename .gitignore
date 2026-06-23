@@ -12,6 +12,12 @@ wp-content/*
 !wp-content/mu-plugins/
 !wp-content/themes/
 
+# Para permitir un plugin específico, debemos permitir la carpeta plugins, 
+# ignorar su contenido por defecto y luego permitir el plugin
+!wp-content/plugins/
+wp-content/plugins/*
+!wp-content/plugins/are-you-paying-attention/
+
 # Opcional: Ignorar los temas por defecto de WordPress para no rastrearlos
 wp-content/themes/twentytwenty*
 wp-content/themes/index.php

@@ -10,11 +10,13 @@ require get_theme_file_path('/inc/search-route.php');
 // esta configuración se cargue al inicializar la API REST.
 function university_custom_rest()
 {
+  // Registra el campo 'authorName' para los posts (entradas del blog)
   register_rest_field('post', 'authorName', array(
     'get_callback' => function () {
       return get_the_author();
     }
   ));
+  // Registra el campo 'userNoteCount' para contar las notas creadas por un usuario
   register_rest_field('note', 'userNoteCount', array(
     'get_callback' => function () {
       return count_user_posts(get_current_user_id(), 'note');
@@ -123,18 +125,21 @@ function university_adjust_queries($query)
 }
 add_action('pre_get_posts', 'university_adjust_queries');
 
+// Redirige a los usuarios con rol 'suscriptor' de la página de administración al frontend
 add_action('admin_init', 'redirectSubsToFrontend');
 
 function redirectSubsToFrontend()
 {
   $ourCurrentUser = wp_get_current_user();
 
+  // Si el usuario solo tiene un rol y es suscriptor, se redirige a la página principal
   if (count($ourCurrentUser->roles) == 1 and $ourCurrentUser->roles[0] == 'subscriber') {
     wp_redirect(site_url('/'));
     exit();
   }
 }
 
+// Oculta la barra de administración superior para los suscriptores
 add_action('wp_loaded', 'noSubsAdminBar');
 
 function noSubsAdminBar()
@@ -146,8 +151,9 @@ function noSubsAdminBar()
   }
 }
 
-// Customize Login Screen
+// --- Personalización de la pantalla de Login ---
 
+// Cambia la URL del logotipo en la pantalla de login para que dirija a la página principal
 add_action('login_headerurl', 'ourHeaderUrl');
 
 function ourHeaderUrl()
@@ -155,6 +161,7 @@ function ourHeaderUrl()
   return esc_url(site_url('/'));
 }
 
+// Carga los estilos CSS del tema en la pantalla de login para mantener el diseño consistente
 add_action('login_enqueue_scripts', 'ourLoginCSS');
 
 function ourLoginCSS()
@@ -164,6 +171,8 @@ function ourLoginCSS()
   wp_enqueue_style('university_main_styles', get_theme_file_uri('/build/style-index.css'));
   wp_enqueue_style('university_extra_styles', get_theme_file_uri('/build/index.css'));
 }
+
+// Cambia el texto del atributo "title" del logotipo en el login para que sea el nombre del sitio
 add_action('login_headertitle', 'ourLoginTitle');
 
 function ourLoginTitle()
@@ -171,17 +180,23 @@ function ourLoginTitle()
   return get_bloginfo('name');
 }
 
+// Intercepta los datos de un post antes de que se inserten o actualicen en la base de datos
 add_filter('wp_insert_post_data', 'makeNotePrivate', 10, 2);
 
 function makeNotePrivate(array $data, array $postarr)
 {
+  // Validaciones si el post es de tipo 'note'
   if ($data['post_type'] == 'note') {
+    // Limita la creación a 4 notas como máximo por usuario (si no es una actualización de un post existente)
     if (count_user_posts(get_current_user_id(), 'note') > 4 and !$postarr['ID']) {
       wp_send_json_error('You have reached your note limit.', 403);
     }
+    // Sanitiza el contenido y el título por seguridad (evita inyección de HTML/JS malicioso)
     $data['post_content'] = sanitize_textarea_field($data['post_content']);
     $data['post_title'] = sanitize_text_field($data['post_title']);
   }
+  
+  // Fuerza que todas las notas sean privadas para que solo su autor pueda verlas
   if ($data['post_type'] == 'note' and $data['post_status'] != 'trash') {
     $data['post_status'] = "private";
   }
