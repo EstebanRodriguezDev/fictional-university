@@ -1,4 +1,6 @@
-const { useBlockProps } = wp.blockEditor;
+import "./index.scss";
+import { TextControl, Flex, FlexBlock, FlexItem, Button, Icon } from "@wordpress/components";
+import { starEmpty } from "@wordpress/icons";
 wp.blocks.registerBlockType("ourplugin/are-you-paying-attention", {
   title: "Are You Paying Attention?",
   apiVersion: 3,
@@ -8,57 +10,36 @@ wp.blocks.registerBlockType("ourplugin/are-you-paying-attention", {
     skyColor: { type: "string" },
     grassColor: { type: "string" },
   },
-  edit: (props) => {
-    function updateSkyColor(event) {
-      props.setAttributes({ skyColor: event.target.value });
-    }
-    function updateGrassColor(event) {
-      props.setAttributes({ grassColor: event.target.value });
-    }
-    const blockProps = useBlockProps();
-    return (
-      <div {...blockProps}>
-        <input
-          type="text"
-          placeholder="sky Color"
-          value={props.attributes.skyColor}
-          onChange={updateSkyColor}
-        />
-        <input
-          type="text"
-          placeholder="grass Color"
-          value={props.attributes.grassColor}
-          onChange={updateGrassColor}
-        />
-      </div>
-    );
-  },
+  edit: EditComponent,
   save: (props) => {
-    const blockProps = useBlockProps.save();
-    // Dejamos el save simple sin blockProps, que es totalmente válido
-    return (
-      <div {...blockProps}>
-        <p>
-          Today the sky is {props.attributes.skyColor} and the grass is{" "}
-          {props.attributes.grassColor}.
-        </p>
-      </div>
-    );
-  },
-  deprecated: [
-    {
-      save: (props) => {
-        const blockProps = useBlockProps.save();
-        // Dejamos el save simple sin blockProps, que es totalmente válido
-        return (
-          <div {...blockProps}>
-            <p>
-              Today the sky is {props.attributes.skyColor} and the grass is{" "}
-              {props.attributes.grassColor}.
-            </p>
-          </div>
-        );
-      },
-    },
-  ],
+    return null;
+  }
 });
+function EditComponent(props) {
+  const blockProps = wp.blockEditor.useBlockProps({ className: "paying-attention-edit-block" });
+  function updateSkyColor(event) {
+    props.setAttributes({ skyColor: event.target.value });
+  }
+  function updateGrassColor(event) {
+    props.setAttributes({ grassColor: event.target.value });
+  }
+  return (
+    <div {...blockProps}>
+      <TextControl label="Question:" />
+      <p>Answers:</p>
+      <Flex>
+        <FlexBlock>
+          <TextControl />
+        </FlexBlock>
+        <FlexItem>
+          <Button>
+            <Icon icon={starEmpty} style={{ color: '#ffb900' }} />
+          </Button>
+        </FlexItem>
+        <FlexItem>
+          <Button>Delete</Button>
+        </FlexItem>
+      </Flex>
+    </div>
+  );
+}
