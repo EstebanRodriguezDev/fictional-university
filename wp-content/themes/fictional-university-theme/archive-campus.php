@@ -1,8 +1,9 @@
 <?php
-// get_header(): Función de WordPress que busca e incluye el archivo header.php de tu tema para mantener la cabecera consistente.
+// Se incluye el header para garantizar que toda la cabecera HTML, los estilos y scripts
+// globales del sitio estén presentes antes del contenido de esta página.
 get_header();
-// Genera el banner superior usando la función reutilizable pageBanner().
-// Define estáticamente el título y subtítulo para la página principal de todos los programas.
+// Se usa pageBanner() con textos fijos porque esta es la página de listado de todos los campus,
+// no una página individual, por lo que no tiene un título dinámico propio en la base de datos.
 pageBanner(array(
   'title' => 'Our Campuses',
   'subtitle' => 'We have several conveniently located campuses.',
@@ -30,6 +31,7 @@ pageBanner(array(
 </div>
 
 <?php
-// get_footer(): Función de WordPress que busca e incluye el archivo footer.php de tu tema.
+// Se incluye el footer para cerrar correctamente el HTML y cargar los scripts que
+// WordPress y los plugins necesitan inyectar al final del body.
 get_footer();
 ?>

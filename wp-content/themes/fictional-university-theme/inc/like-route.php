@@ -1,15 +1,18 @@
 <?php
-// Registra las rutas personalizadas de la API REST al inicializar
+// Se engancha al hook 'rest_api_init' para registrar las rutas solo cuando la API REST
+// está activa, evitando errores si se llama antes de que WordPress la inicialice.
 add_action('rest_api_init', 'universityLikeRoutes');
 
 function universityLikeRoutes()
 {
-  // Ruta para crear un "like" (POST)
+  // Se registra la ruta POST para crear likes porque la API REST de WordPress
+  // diferencia verbos HTTP, permitiendo reutilizar la misma URL para crear y eliminar.
   register_rest_route('university/v1', 'manageLike', array(
     'methods' => 'POST',
     'callback' => 'createLike',
   ));
-  // Ruta para eliminar un "like" (DELETE)
+  // Se registra la ruta DELETE en la misma URL para eliminar likes porque
+  // mantiene la semántica REST correcta sin necesidad de crear un endpoint separado.
   register_rest_route('university/v1', 'manageLike', array(
     'methods' => 'DELETE',
     'callback' => 'deleteLike',
@@ -19,11 +22,13 @@ function universityLikeRoutes()
 // Función que maneja la creación de un nuevo "like"
 function createLike(WP_REST_Request $data)
 {
-  // Verifica que el usuario esté logueado antes de permitirle dar "like"
+  // Se verifica la autenticación aquí (en el backend) porque la validación
+  // del frontend puede ser fácilmente omitida desde herramientas externas.
   if (is_user_logged_in()) {
-    $professor = sanitize_text_field($data['professorId']); // Sanitiza el ID del profesor
+    $professor = sanitize_text_field($data['professorId']); // Se sanitiza el ID para prevenir inyección de datos maliciosos en la consulta.
     
-    // Consulta para comprobar si el usuario ya le dio "like" a este profesor
+    // Se comprueba si ya existe un like previo para evitar duplicados
+    // en la base de datos, garantizando que cada usuario solo dé un like por profesor.
     $existQuery = new WP_Query(array(
       'author' => get_current_user_id(),
       'post_type' => 'like',
@@ -35,18 +40,21 @@ function createLike(WP_REST_Request $data)
         )
       )
     ));
-    // Si el usuario no tiene un "like" previo y el ID corresponde a un "professor"
+    // Se verifica que sea un post de tipo 'professor' para evitar que alguien dé
+    // like a un tipo de contenido incorrecto enviando un ID arbitrario.
     if ($existQuery->found_posts == 0 and get_post_type($professor) == 'professor') {
-      // Crea un nuevo post de tipo "like" en la base de datos
+      // Se crea un post de tipo 'like' para persistir el like en la base de datos,
+      // aprovechando la infraestructura de posts de WordPress sin crear tablas propias.
       $like_id = wp_insert_post(array(
         'post_type' => 'like',
         'post_status' => 'publish',
-        'post_title' => 'Our PHP Create Post Test', // El título no es relevante, pero es requerido
+        'post_title' => 'Our PHP Create Post Test', // El título es requerido por WordPress pero no tiene relevancia funcional para los likes.
         'meta_input' => array(
-          'liked_professor_id' => $professor, // Asigna el ID del profesor al campo personalizado
+          'liked_professor_id' => $professor, // Se guarda el ID del profesor en un campo personalizado para poder filtrar los likes por profesor después.
         ),
       ));
-      // Validamos si falló la creación del post
+      // Se valida el resultado de wp_insert_post() porque puede fallar silenciosamente
+      // devolviendo 0 o un WP_Error sin lanzar excepción.
       if (is_wp_error($like_id) || $like_id === 0) {
         return new WP_REST_Response('Error al guardar el like en la base de datos', 500);
       }
@@ -66,10 +74,11 @@ function createLike(WP_REST_Request $data)
 // Función que maneja la eliminación de un "like"
 function deleteLike(WP_REST_Request $data)
 {
-  $likeId = sanitize_text_field($data['like']); // Sanitiza el ID del like a eliminar
-  // Verifica si el usuario actual es el autor del "like" y si el ID corresponde a un post tipo "like"
+  $likeId = sanitize_text_field($data['like']); // Se sanitiza el ID para prevenir inyección de datos maliciosos.
+  // Se verifica que el usuario sea el autor del like Y que el post sea de tipo 'like'
+  // para evitar que un usuario elimine los likes de otro usuario enviando un ID ajeno.
   if (get_current_user_id() == get_post_field('post_author', $likeId) and get_post_type($likeId) == 'like') {
-    wp_delete_post($likeId, true); // Elimina permanentemente el post (true = saltar papelera)
+    wp_delete_post($likeId, true); // Se pasa 'true' para eliminar permanentemente el like sin enviarlo a la papelera, ya que los likes no necesitan recuperarse.
     return array(
       'status' => 'success',
       'mensaje' => 'Like eliminado correctamente',

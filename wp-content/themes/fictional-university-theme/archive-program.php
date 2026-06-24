@@ -1,8 +1,9 @@
 <?php
-// get_header(): Función de WordPress que busca e incluye el archivo header.php de tu tema para mantener la cabecera consistente.
+// Se incluye el header para garantizar que toda la cabecera HTML, los estilos y scripts
+// globales del sitio estén presentes antes del contenido de esta página.
 get_header();
-// Genera el banner superior usando la función reutilizable pageBanner().
-// Define estáticamente el título y subtítulo para la página principal de todos los programas.
+// Se usa pageBanner() con textos fijos porque esta es la página de listado de todos los programas,
+// no una página individual, por lo que no tiene un título dinámico propio en la base de datos.
 pageBanner(array(
   'title' => 'All Programs',
   'subtitle' => 'There is something for everyone. Have a look around.',
@@ -12,23 +13,24 @@ pageBanner(array(
 <div class="container container--narrow page-section">
   <ul class="link-list min-list">
     <?php
-    // have_posts(): Función que devuelve true si hay contenidos (programas) en la base de datos para mostrar.
-    // while(): Inicia el "Loop" de WordPress para recorrer cada uno de los resultados encontrados.
+    // Se usa el Loop estándar de WordPress para aprovechar la consulta principal
+    // que WordPress ya preparó automáticamente para este archivo de tipo 'program'.
     while (have_posts()) {
-      // the_post(): Prepara los datos del programa actual (título, link, etc.) para que las funciones de abajo puedan usarlos.
       the_post();
     ?>
-      <!-- the_permalink(): Imprime la dirección URL única del programa actual para que el usuario pueda hacer clic. -->
-      <!-- the_title(): Imprime el nombre o título del programa académico actual. -->
+      <!-- Se enlaza al detalle de cada programa para que el usuario pueda navegar
+           directamente a la información completa de cada carrera desde esta lista. -->
       <li><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></li>
     <?php }
-    // paginate_links(): Genera automáticamente la numeración de páginas (1, 2, Siguiente...) si hay muchos programas.
+    // Se genera la paginación para que el usuario pueda navegar entre páginas de resultados
+    // sin necesidad de construir la lógica de navegación manualmente.
     echo paginate_links();
     ?>
   </ul>
 </div>
 
 <?php
-// get_footer(): Función de WordPress que busca e incluye el archivo footer.php de tu tema.
+// Se incluye el footer para cerrar correctamente el HTML y cargar los scripts que
+// WordPress y los plugins necesitan inyectar al final del body.
 get_footer();
 ?>

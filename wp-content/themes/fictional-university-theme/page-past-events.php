@@ -1,7 +1,9 @@
 <?php
-// get_header(): Función de WordPress que busca e incluye el archivo header.php del tema.
+// Se incluye el header para garantizar que toda la cabecera HTML, los estilos y scripts
+// globales del sitio estén presentes antes del contenido de esta página.
 get_header();
-// Llama al banner superior y le pasa textos estáticos específicos para esta página de eventos pasados.
+// Se usa pageBanner() con textos fijos porque esta página siempre es de eventos pasados,
+// por lo que su título y subtítulo son constantes y no dependen de un post en la base de datos.
 pageBanner(array(
   'title' => 'Past Events',
   'subtitle' => 'See what is going on in our wolrd',
@@ -11,38 +13,42 @@ pageBanner(array(
 
 <div class="container container--narrow page-section">
   <?php
-  $today = date('Ymd'); // date('Ymd'): Obtiene la fecha actual para comparar con el formato de ACF.
+  $today = date('Ymd'); // Se usa el formato 'AñoMesDía' porque ACF almacena las fechas en ese formato numérico para poder comparar y ordenar correctamente.
 
-  // WP_Query: Realiza una consulta personalizada para mostrar eventos cuya fecha ya pasó.
+  // Se usa WP_Query personalizado (en vez del Loop principal) para controlar exactamente
+  // los eventos a mostrar: solo del tipo 'event', filtrados por fecha pasada y con paginación.
   $pastEvents = new WP_Query(array(
-    'paged' => get_query_var('paged', 1), // Permite que la paginación funcione en una página personalizada.
-    'post_type' => 'event', // Filtra por el tipo de contenido 'event'.
-    'meta_key' => 'event_date', // Indica que se usará el campo personalizado 'event_date' para ordenar.
-    'orderby' => 'meta_value_num', // Ordena numéricamente basándose en el meta_key.
-    'order' => 'ASC', // Orden ascendente.
-    'meta_query' => array( // Filtro adicional para traer solo eventos pasados.
+    'paged' => get_query_var('paged', 1), // Se pasa la variable de paginación para que WordPress sepa qué página mostrar en una página estática.
+    'post_type' => 'event',
+    'meta_key' => 'event_date', // Se indica el campo de fecha para que WordPress lo use como criterio de ordenamiento.
+    'orderby' => 'meta_value_num', // Se ordena numéricamente porque la fecha está guardada como número (ej. 20241230) en ACF.
+    'order' => 'ASC',
+    'meta_query' => array( // Se usa meta_query para filtrar y mostrar SOLO los eventos cuya fecha ya pasó.
       array(
         'key' => 'event_date',
-        'compare' => '<', // Compara si la fecha del evento es menor que la fecha de hoy.
+        'compare' => '<', // Se compara con '<' para traer solo eventos anteriores a hoy.
         'value' => $today,
         'type' => 'numeric'
       )
     )
   ));
 
-  // Inicia el bucle para recorrer los resultados de la consulta personalizada.
+  // Se itera sobre la consulta personalizada de eventos pasados
+  // para renderizar cada evento con su plantilla reutilizable.
   while ($pastEvents->have_posts()) {
-    $pastEvents->the_post(); // Prepara los datos del evento actual (título, contenido, etc.).
+    $pastEvents->the_post();
     get_template_part('template-parts/event');
   }
-  // paginate_links(): Genera los botones de navegación (1, 2, 3...).
+  // Se pasa el total de páginas del query personalizado porque paginate_links()
+  // por defecto usa el total de la consulta principal (la página), no de $pastEvents.
   echo paginate_links(array(
-    'total' => $pastEvents->max_num_pages // Se debe pasar el total de páginas del query personalizado para que funcione.
+    'total' => $pastEvents->max_num_pages
   ));
   ?>
 </div>
 
 <?php
-// get_footer(): Función de WordPress que busca e incluye el archivo footer.php del tema.
+// Se incluye el footer para cerrar correctamente el HTML y cargar los scripts que
+// WordPress y los plugins necesitan inyectar al final del body.
 get_footer();
 ?>

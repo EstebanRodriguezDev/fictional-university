@@ -3,7 +3,8 @@
     <div class="group">
       <div class="site-footer__col-one">
         <h1 class="school-logo-text school-logo-text--alt-color">
-          <!-- site_url(): Devuelve la URL principal de la universidad. -->
+          <!-- Se usa site_url() para que el logo del footer siempre apunte a la
+               raíz del sitio, sin importar en qué página esté el usuario. -->
           <a href="<?php echo site_url(); ?>"><strong>Fictional</strong> University</a>
         </h1>
         <p><a class="site-footer__link" href="#">555.555.5555</a></p>
@@ -59,7 +60,9 @@
     </div>
   </div>
 </footer>
-<!-- wp_footer(): Función vital. Aquí WordPress inyecta todos los scripts (JS) cargados en functions.php y los de plugins activos. -->
+<!-- Se llama wp_footer() aquí (justo antes de cerrar el body) porque WordPress
+     requiere este hook para inyectar los scripts JS de plugins y del tema en el lugar
+     correcto del DOM, garantizando que el HTML ya esté cargado cuando se ejecuten. -->
 <?php wp_footer(); ?>
 </body>
 

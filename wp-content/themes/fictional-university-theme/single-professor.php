@@ -1,15 +1,19 @@
 <?php
-// get_header(): Incluye el archivo header.php del tema.
+// Se incluye el header para garantizar que toda la cabecera HTML, los estilos y scripts
+// globales del sitio estén presentes antes del contenido de esta página.
 get_header();
 
-// Inicia el bucle (Loop) de WordPress para procesar el contenido del profesor actual.
+// Se usa el Loop de WordPress para poder acceder a los datos del profesor actual
+// (título, imagen de banner, contenido, campos ACF) en el contexto correcto.
 while (have_posts()) {
-  the_post(); // Prepara los datos del post (título, contenido, etc.).
-  // Despliega el banner superior. Al ser un profesor, detectará su título y su imagen de fondo (ACF).
+  the_post();
+  // Se llama pageBanner() sin argumentos para que detecte automáticamente el título del profesor
+  // y su imagen de fondo configurada en ACF, sin necesidad de pasarlos explícitamente.
   pageBanner();
 ?>
   <div class="container container--narrow page-section">
-    <!-- the_content(): Imprime la biografía o descripción principal del profesor. -->
+    <!-- Se usa the_content() para renderizar el contenido del editor de WordPress,
+         permitiendo al editor añadir la biografía del profesor sin tocar el código de la plantilla. -->
     <div class="generic-content">
       <div class="row group">
         <div class="one-third">
@@ -17,12 +21,13 @@ while (have_posts()) {
         </div>
         <div class="two-thirds">
           <?php
-          // Consulta para obtener la cantidad total de "likes" de este profesor
+          // Se hace una WP_Query de posts tipo 'like' filtrados por el ID de este profesor
+          // para contar cuántos usuarios le han dado like, sin depender del JS para el conteo inicial.
           $likeCount = new WP_Query(array(
             'post_type' => 'like',
             'meta_query' => array(
               array(
-                'key' => 'liked_professor_id', // Busca por el ID del profesor que fue "likeado"
+                'key' => 'liked_professor_id', // Se filtra por este campo para contar solo los likes de ESTE profesor específico.
                 'compare' => '=',
                 'value' => get_the_ID(),
               )
@@ -31,10 +36,11 @@ while (have_posts()) {
           $existStatus = 'no';
           $like_id = '';
           
-          // Si el usuario está logueado, verificamos si él específicamente le ha dado "like" a este profesor
+          // Se verifica si el usuario está logueado antes de buscar su like para
+          // evitar hacer una consulta innecesaria a la base de datos para visitantes anónimos.
           if (is_user_logged_in()) {
             $existQuery = new WP_Query(array(
-              'author' => get_current_user_id(), // Solo likes del usuario actual
+              'author' => get_current_user_id(), // Se filtra por el usuario actual para saber si ÉL específicamente ya le dio like.
               'post_type' => 'like',
               'meta_query' => array(
                 array(
@@ -44,7 +50,8 @@ while (have_posts()) {
                 )
               )
             ));
-            // Si encuentra un registro, el estado cambia a 'yes' y guardamos el ID del "like" para poder eliminarlo después
+            // Se guarda el ID del like existente para que el JS pueda enviarlo
+            // en la petición DELETE si el usuario decide quitar su like.
             if ($existQuery->found_posts) {
               $existStatus = 'yes';
               $like_id = $existQuery->posts[0]->ID;
@@ -61,14 +68,18 @@ while (have_posts()) {
       </div>
     </div>
     <?php
-    // get_field(): Obtiene el campo personalizado de relación de ACF 'related_programs'.
+    // Se obtienen los programas relacionados desde ACF para mostrar qué asignaturas
+    // imparte el profesor, ayudando al estudiante a encontrar a su docente por área.
     $relatedPrograms = get_field('related_programs');
 
-    if ($relatedPrograms) { // Solo muestra la sección si hay programas asignados.
+    // Se muestra la sección solo si el profesor tiene programas asignados para no
+    // dejar un bloque vacío en la página.
+    if ($relatedPrograms) {
       echo '<hr class="section-break">';
       echo '<h2 class="headline headline--medium"> Subject(s) Taught</h2>';
       echo '<ul class="link-list min-list">';
-      // Itera sobre el array de objetos de post retornados por ACF.
+      // Se itera sobre el array de objetos retornado por ACF para generar el enlace
+      // a cada programa, sin necesidad de hacer una WP_Query adicional.
       foreach ($relatedPrograms as $program) { ?>
         <li><a href="<?php echo get_the_permalink($program); ?>"><?php echo get_the_title($program); ?></a></li>
     <?php }
@@ -77,5 +88,6 @@ while (have_posts()) {
     ?>
   </div>
 <?php }
-// get_footer(): Incluye el archivo footer.php del tema.
+// Se incluye el footer para cerrar correctamente el HTML y cargar los scripts que
+// WordPress y los plugins necesitan inyectar al final del body.
 get_footer();

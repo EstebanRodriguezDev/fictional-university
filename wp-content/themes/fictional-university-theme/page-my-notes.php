@@ -1,6 +1,9 @@
 <?php
-// get_header(): Función de WordPress que incluye el archivo 'header.php' del tema.
+// Se incluye el header para garantizar que toda la cabecera HTML, los estilos y scripts
+// globales del sitio estén presentes antes del contenido de esta página.
 get_header();
+// Se redirige al usuario no autenticado antes de mostrar cualquier contenido
+// para proteger la página de notas de visitantes anónimos.
 if (!is_user_logged_in()) {
   wp_redirect(esc_url(site_url('/')));
   exit;
@@ -8,9 +11,12 @@ if (!is_user_logged_in()) {
 ?>
 
 <?php
-while (have_posts()) { // while (have_posts()): Inicia el "Loop" de WordPress. have_posts() devuelve true si hay posts (páginas en este caso) para mostrar.
-  the_post(); // the_post(): Prepara los datos del post/página actual para ser usados por las funciones de plantilla.
-  // Muestra el banner superior dinámico. Sin parámetros, usará el título de la página actual.
+// Se usa el Loop de WordPress aquí (aunque sea una página) para poder llamar
+// a pageBanner() sin argumentos y que use automáticamente el título de la página 'My Notes'.
+while (have_posts()) {
+  the_post();
+  // Se llama pageBanner() sin argumentos para que use el título de la página actual,
+  // manteniendo el diseño consistente con el resto del sitio.
   pageBanner();
 ?>
 
@@ -24,11 +30,12 @@ while (have_posts()) { // while (have_posts()): Inicia el "Loop" de WordPress. h
     </div>
     <ul class="min-list link-list" id="my-notes">
       <?php
-      // Consulta personalizada para obtener todas las notas del usuario actual
+      // Se usa una WP_Query personalizada para obtener SOLO las notas del usuario actual,
+      // ya que el Loop principal solo carga la página, no sus notas asociadas.
       $userNotes = new WP_Query(array(
         'post_type' => 'note',
-        'posts_per_page' => -1, // -1 para mostrar todas las notas
-        'author' => get_current_user_id(), // Filtra por el ID del usuario logueado
+        'posts_per_page' => -1, // Se traen todas las notas porque el usuario necesita verlas y gestionarlas todas.
+        'author' => get_current_user_id(), // Se filtra por usuario para que nadie vea las notas de otros.
       ));
       while ($userNotes->have_posts()) {
         $userNotes->the_post(); ?>
@@ -48,5 +55,7 @@ while (have_posts()) { // while (have_posts()): Inicia el "Loop" de WordPress. h
   </div>
 <?php }
 
-get_footer(); // get_footer(): Incluye el archivo 'footer.php' del tema.
+// Se incluye el footer para cerrar correctamente el HTML y cargar los scripts que
+// WordPress y los plugins necesitan inyectar al final del body.
+get_footer();
 ?>
